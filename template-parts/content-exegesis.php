@@ -26,7 +26,7 @@ foreach ($evangelists as $key => $evangelist) {
 <?php if (!empty($available_exegesis)): ?>
     <div class="evangelist-switcher exegesis-switcher">
         <?php foreach ($available_exegesis as $evangelist => $page): ?>
-            <button class="nav-tab <?php echo ($evangelist === $active_evangelist_key) ? 'active' : ''; ?>" data-exegesis-target="<?php echo strtolower($evangelist); ?>">
+            <button class="nav-tab <?php echo ($evangelist === $active_evangelist_key) ? 'active' : ''; ?>" data-exegesis-target="exegesis-<?php echo strtolower($evangelist); ?>">
                 <?php echo esc_html($display_names[$evangelist]); ?>
             </button>
         <?php endforeach; ?>
@@ -39,18 +39,22 @@ foreach ($evangelists as $key => $evangelist) {
             $katolicky_citace = $story_data['info'][$evangelist . '_Citace'] ?? '';
             ?>
             <div id="exegesis-<?php echo strtolower($evangelist); ?>" class="exegesis-content <?php echo $is_active ? 'active' : ''; ?>">
-                
-                <?php if (!empty($katolicky_text)): ?>
-                    <div class="exegesis-base-text">
-                        <h4><?php echo esc_html($katolicky_citace); ?></h4>
-                        <p><em><?php echo nl2br(esc_html($katolicky_text)); ?></em></p>
+                <div class="content-to-copy-wrapper">
+                    <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#exegesis-<?php echo strtolower($evangelist); ?> .copy-target">
+                        <i class="fa fa-clone" aria-hidden="true"></i>
+                    </button>
+                    <div class="copy-target">
+                        <?php if (!empty($katolicky_text)): ?>
+                            <div class="exegesis-base-text">
+                                <h4><?php echo esc_html($katolicky_citace); ?></h4>
+                                <p><em><?php echo nl2br(esc_html($katolicky_text)); ?></em></p>
+                            </div>
+                        <?php endif; ?>
+                        <div class="exegesis-main-content">
+                            <?php echo apply_filters('the_content', $page->post_content); ?>
+                        </div>
                     </div>
-                <?php endif; ?>
-
-                <div class="exegesis-main-content">
-                    <?php echo apply_filters('the_content', $page->post_content); ?>
                 </div>
-
             </div>
         <?php endforeach; ?>
     </div>

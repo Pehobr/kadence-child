@@ -72,21 +72,31 @@ $parafraze_page = get_page_by_path($parafraze_page_slug, OBJECT, 'page');
                 </div>
 
                 <?php if ($comparison_page): ?>
-                <div id="text-comparison-view" class="tab-content">
-                    <div class="analysis-content">
-                        <?php echo apply_filters('the_content', $comparison_page->post_content); ?>
-                    </div>
-                </div>
-                <?php endif; ?>
+<div id="text-comparison-view" class="tab-content">
+    <div class="analysis-content content-to-copy-wrapper">
+        <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#text-comparison-view .copy-target">
+            <i class="fa fa-clone" aria-hidden="true"></i>
+        </button>
+        <div class="copy-target">
+            <?php echo apply_filters('the_content', $comparison_page->post_content); ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
-                <?php // --- PŘIDÁNO: Kontejner pro Parafrázi --- ?>
-                <?php if ($parafraze_page): ?>
-                <div id="parafraze-view" class="tab-content">
-                    <div class="analysis-content">
-                        <?php echo apply_filters('the_content', $parafraze_page->post_content); ?>
-                    </div>
-                </div>
-                <?php endif; ?>
+<?php // --- PŘIDÁNO: Kontejner pro Parafrázi --- ?>
+<?php if ($parafraze_page): ?>
+<div id="parafraze-view" class="tab-content">
+    <div class="analysis-content content-to-copy-wrapper">
+        <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#parafraze-view .copy-target">
+            <i class="fa fa-clone" aria-hidden="true"></i>
+        </button>
+        <div class="copy-target">
+            <?php echo apply_filters('the_content', $parafraze_page->post_content); ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
                 <?php // --- PŘIDÁNO: Kontejner pro AI Podcast --- ?>
                 <?php if ($podcast_page): ?>

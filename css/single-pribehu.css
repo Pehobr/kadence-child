@@ -368,3 +368,44 @@
     font-family: monospace; /* Zajistí, že číslice mají stejnou šířku a čas "neposkakuje". */
     flex-shrink: 0; /* Zabrání zmenšení časového údaje. */
 }
+
+/* === Tlačítko pro zkopírování textu === */
+
+.content-to-copy-wrapper {
+    position: relative;
+    padding-top: 35px; /* Vytvoří místo pro tlačítko nad textem */
+}
+
+.copy-to-clipboard-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #f5f2eb;
+    color: #514332;
+    border: 1px solid #d8d5d1;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px 10px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.copy-to-clipboard-btn:hover {
+    background-color: #b7a99a;
+    color: #3e2f1c;
+}
+
+.copy-to-clipboard-btn .fa {
+    font-size: 16px;
+}
+
+/* Styl pro vizuální potvrzení zkopírování */
+.copy-to-clipboard-btn.copied {
+    background-color: #7bdcb5; /* Zelená barva */
+    color: #ffffff;
+    border-color: #7bdcb5;
+}
