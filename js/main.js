@@ -1,160 +1,122 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- Logika pro přepínání VŠECH záložek na stránce detailu příběhu ---
+    /**
+     * Funkce pro obsluhu hlavních záložek (Evangelisté, Překlady, atd.).
+     */
+    function setupMainTabs() {
+        const viewSwitcher = document.querySelector('.view-switcher');
+        if (!viewSwitcher) {
+            return;
+        }
 
-    function initializeTabSwitcher(switcherSelector, contentSelector, dataAttribute) {
-        const tabs = document.querySelectorAll(switcherSelector);
-        const contents = document.querySelectorAll(contentSelector);
-        
-        if (tabs.length === 0) return;
+        const mainTabs = viewSwitcher.querySelectorAll('.nav-tab[data-target]');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Deaktivace všech tlačítek a obsahů v dané skupině
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
+        mainTabs.forEach(tab => {
+            tab.addEventListener('click', function (event) {
+                event.preventDefault();
 
-                // Aktivace kliknutého tlačítka a příslušného obsahu
-                tab.classList.add('active');
-                const targetId = tab.dataset[dataAttribute.replace('data-', '')];
+                // Deaktivace všech tlačítek a aktivace kliknutého
+                mainTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                // Získání ID cílového obsahu
+                const targetId = this.getAttribute('data-target');
                 const targetContent = document.getElementById(targetId);
-                
+
                 if (targetContent) {
+                    // Skrytí všech obsahů a zobrazení cílového
+                    tabContents.forEach(content => content.classList.remove('active'));
                     targetContent.classList.add('active');
-                    // Jakmile je záložka viditelná, zkusíme inicializovat přehrávač.
-                    // Funkce je napsaná tak, že nevadí, když se zavolá víckrát.
-                    initializeCustomAudioPlayers();
-                }
-            });
-        });
-    }
-
-    // Hlavní záložky (Evangelisté, Překlady, Exegeze...)
-    initializeTabSwitcher('.story-detail .view-switcher .nav-tab', '.story-detail > .tab-content', 'data-target');
-    
-    // Pod-záložky (jednotliví evangelisté v překladech)
-    initializeTabSwitcher('#translations-view .evangelist-switcher .nav-tab', '.evangelist-translation-content', 'data-evangelist');
-
-    // Pod-záložky (jednotliví evangelisté v exegezi)
-    initializeTabSwitcher('#analysis-view .exegesis-switcher .nav-tab', '.exegesis-content', 'data-exegesis-target');
-
-    // Pod-záložky (jednotliví evangelisté ve výkladu)
-    initializeTabSwitcher('#spiritual-view .spiritual-switcher .nav-tab', '.spiritual-content', 'data-spiritual-target');
-
-    // --- Funkce pro vytvoření vlastního audio přehrávače ---
-    function initializeCustomAudioPlayers() {
-        const playerContainers = document.querySelectorAll('.podcast-player-container');
-
-        playerContainers.forEach(container => {
-            // Zkontrolujeme, zda jsme pro tento kontejner již přehrávač nevytvořili.
-            if (container.dataset.playerInitialized) {
-                return;
-            }
-
-            const originalAudio = container.querySelector('audio');
-            if (!originalAudio) {
-                return;
-            }
-
-            // Skryjeme původní přehrávač od WordPressu (MediaElement.js).
-            const mediaElementWrapper = originalAudio.closest('.mejs-container');
-            if (mediaElementWrapper) {
-                mediaElementWrapper.style.display = 'none';
-            } else {
-                originalAudio.style.display = 'none';
-            }
-
-            // Vytvoříme HTML strukturu pro náš vlastní přehrávač.
-            const customPlayerHTML = `
-                <div class="ai-audio-player">
-                    <button class="play-pause-btn">
-                        <i class="fa fa-play" aria-hidden="true"></i>
-                    </button>
-                    <div class="progress-bar-wrapper">
-                        <div class="progress-bar"></div>
-                    </div>
-                    <div class="time-display">0:00 / 0:00</div>
-                </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', customPlayerHTML);
-            container.dataset.playerInitialized = 'true';
-
-            const customPlayer = container.querySelector('.ai-audio-player');
-            const playPauseBtn = customPlayer.querySelector('.play-pause-btn');
-            const playIcon = playPauseBtn.querySelector('.fa');
-            const progressBarWrapper = customPlayer.querySelector('.progress-bar-wrapper');
-            const progressBar = customPlayer.querySelector('.progress-bar');
-            const timeDisplay = customPlayer.querySelector('.time-display');
-
-            const formatTime = (seconds) => {
-                if (isNaN(seconds) || seconds < 0) return "0:00";
-                const minutes = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-            };
-
-            playPauseBtn.addEventListener('click', () => {
-                if (originalAudio.paused) {
-                    originalAudio.play();
                 } else {
-                    originalAudio.pause();
-                }
-            });
-
-            originalAudio.addEventListener('play', () => { playIcon.classList.remove('fa-play'); playIcon.classList.add('fa-pause'); });
-            originalAudio.addEventListener('pause', () => { playIcon.classList.remove('fa-pause'); playIcon.classList.add('fa-play'); });
-
-            originalAudio.addEventListener('timeupdate', () => {
-                const { currentTime, duration } = originalAudio;
-                if (duration) {
-                    progressBar.style.width = `${(currentTime / duration) * 100}%`;
-                    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-                }
-            });
-
-            originalAudio.addEventListener('loadedmetadata', () => { if (originalAudio.duration) { timeDisplay.textContent = `0:00 / ${formatTime(originalAudio.duration)}`; } });
-
-            progressBarWrapper.addEventListener('click', (e) => {
-                const { clientWidth } = progressBarWrapper;
-                const clickX = e.offsetX;
-                const duration = originalAudio.duration;
-                if (duration) {
-                    originalAudio.currentTime = (clickX / clientWidth) * duration;
+                    console.error('Cílový obsah nebyl nalezen pro ID:', targetId);
                 }
             });
         });
     }
 
-    // --- Funkce pro kopírování do schránky ---
-    const copyButtons = document.querySelectorAll('.copy-to-clipboard-btn');
+    /**
+     * Funkce pro obsluhu přepínání podzáložek (např. evangelistů v Exegezi).
+     * Funguje pro jakýkoli přepínač s třídou .evangelist-switcher.
+     */
+    function setupEvangelistSwitchers() {
+        const switchers = document.querySelectorAll('.evangelist-switcher');
 
-    copyButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetSelector = button.dataset.clipboardTarget;
-            const contentElement = document.querySelector(targetSelector);
+        switchers.forEach(switcher => {
+            const buttons = switcher.querySelectorAll('.nav-tab[data-target]');
+            // Předpokládáme, že kontejner s obsahem je hned další element po přepínači
+            const contentContainer = switcher.nextElementSibling;
 
-            if (contentElement) {
-                const textToCopy = contentElement.innerText;
-
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Vizuální zpětná vazba pro uživatele
-                    const originalIcon = button.innerHTML;
-                    button.innerHTML = '✓ Zkopírováno';
-                    button.classList.add('copied');
-
-                    // Vrátí tlačítko do původního stavu po 2 sekundách
-                    setTimeout(() => {
-                        button.innerHTML = originalIcon;
-                        button.classList.remove('copied');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Chyba při kopírování textu: ', err);
-                    alert('Chyba při kopírování. Zkuste to prosím znovu.');
-                });
-            } else {
-                 console.warn('Element ke zkopírování nebyl nalezen:', targetSelector);
+            if (!contentContainer) {
+                console.error('Chybí kontejner s obsahem pro přepínač:', switcher);
+                return;
             }
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const targetSelector = this.getAttribute('data-target');
+                    const targetContent = document.querySelector(targetSelector);
+
+                    if (!targetContent) {
+                        console.error('Cílový obsah nebyl nalezen pro selektor:', targetSelector);
+                        return;
+                    }
+
+                    // Deaktivace všech tlačítek v rámci tohoto přepínače
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    // Aktivace kliknutého tlačítka
+                    this.classList.add('active');
+
+                    // Skrytí veškerého obsahu v příslušném kontejneru
+                    const allContentPanes = contentContainer.querySelectorAll('.evangelist-translation-content, .exegesis-content, .spiritual-content');
+                    allContentPanes.forEach(content => content.classList.remove('active'));
+
+                    // Zobrazení cílového obsahu
+                    targetContent.classList.add('active');
+                });
+            });
         });
-    });
+    }
+
+    /**
+     * Funkce pro kopírování textu do schránky s vizuální zpětnou vazbou.
+     */
+    function setupCopyToClipboard() {
+        const copyButtons = document.querySelectorAll('.copy-to-clipboard-btn');
+
+        copyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetSelector = this.getAttribute('data-clipboard-target');
+                const targetElement = document.querySelector(targetSelector);
+
+                if (targetElement && navigator.clipboard) {
+                    navigator.clipboard.writeText(targetElement.innerText.trim()).then(() => {
+                        const originalTitle = this.title;
+                        const icon = this.querySelector('i');
+                        const originalIconClass = icon.className;
+
+                        this.title = 'Zkopírováno!';
+                        icon.className = 'fa fa-check';
+
+                        setTimeout(() => {
+                            this.title = originalTitle;
+                            icon.className = originalIconClass;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Nepodařilo se zkopírovat text: ', err);
+                        alert('Kopírování se nezdařilo. Zkuste to prosím ručně.');
+                    });
+                }
+            });
+        });
+    }
+
+    // Spuštění všech inicializačních funkcí po načtení stránky
+    setupMainTabs();
+    setupEvangelistSwitchers();
+    setupCopyToClipboard();
+
 });
+

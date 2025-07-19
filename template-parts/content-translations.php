@@ -33,7 +33,7 @@ foreach ($evangelists as $evangelist) {
         if ($has_text):
             $is_active = ($evangelist === $active_evangelist);
         ?>
-            <button class="nav-tab <?php echo $is_active ? 'active' : ''; ?>" data-evangelist="<?php echo strtolower($evangelist); ?>">
+            <button class="nav-tab <?php echo $is_active ? 'active' : ''; ?>" data-target="#evangelist-<?php echo strtolower($evangelist); ?>">
                 <?php echo esc_html($display_names[$evangelist]); // Zobrazení jména s diakritikou ?>
             </button>
         <?php endif; ?>

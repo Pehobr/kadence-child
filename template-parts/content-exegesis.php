@@ -26,7 +26,7 @@ foreach ($evangelists as $key => $evangelist) {
 <?php if (!empty($available_exegesis)): ?>
     <div class="evangelist-switcher exegesis-switcher">
         <?php foreach ($available_exegesis as $evangelist => $page): ?>
-            <button class="nav-tab <?php echo ($evangelist === $active_evangelist_key) ? 'active' : ''; ?>" data-exegesis-target="exegesis-<?php echo strtolower($evangelist); ?>">
+            <button class="nav-tab <?php echo ($evangelist === $active_evangelist_key) ? 'active' : ''; ?>" data-target="#exegesis-<?php echo strtolower($evangelist); ?>">
                 <?php echo esc_html($display_names[$evangelist]); ?>
             </button>
         <?php endforeach; ?>
