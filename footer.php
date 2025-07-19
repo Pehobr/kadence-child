@@ -38,7 +38,7 @@ do_action( 'kadence_after_content' );
 <?php // ?>
 <div class="mobile-bottom-bar">
     <?php // Ikona 1: Odkaz na profil (pokud bude existovat) ?>
-    <a href="<?php echo esc_url( get_edit_user_link() ); ?>" class="mobile-nav-icon"><i class="fa fa-user" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( site_url( '/navod/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-question" aria-hidden="true"></i></a>
 
     <?php // Ikona 2: Odkaz na Vyhledávání citací ?>
     <a href="<?php echo esc_url( site_url( '/vyhledavani-citaci/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-search" aria-hidden="true"></i></a>

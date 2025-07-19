@@ -4,7 +4,15 @@
    i na novou šablonu stránky (.page-template-template-pribehy-php)
    ========================================================================== */
 
-/* === Hlavní layout a pozadí === */
+/* === Větší odsazení od hlavičky na PC === */
+@media (min-width: 1024px) {
+    .page-template-template-pribehy-php .content-area,
+    .post-type-archive-evangelijni_pribeh .content-area {
+        margin-top: 1.5rem; /* Zvětšení horní mezery */
+    }
+}
+
+   /* === Hlavní layout a pozadí === */
 
 .post-type-archive-evangelijni_pribeh .entry-hero,
 .page-template-template-pribehy-php .entry-hero,
