@@ -44,7 +44,7 @@ do_action( 'kadence_after_content' );
     <?php // Odkaz na domovskou stránku ?>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="mobile-nav-icon mobile-nav-icon-home"><i class="fa fa-home" aria-hidden="true"></i></a>
     <?php // Odkaz na archiv příběhů ?>
-    <a href="<?php echo esc_url( get_post_type_archive_link('evangelijni_pribeh') ); ?>" class="mobile-nav-icon"><i class="fa fa-archive" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'katalog' ) ) ); ?>" class="mobile-nav-icon"><i class="fa fa-archive" aria-hidden="true"></i></a>
     <?php // Odkaz na nastavení (pokud bude existovat) ?>
     <a href="<?php echo esc_url( admin_url() ); ?>" class="mobile-nav-icon"><i class="fa fa-cog" aria-hidden="true"></i></a>
 </div>
