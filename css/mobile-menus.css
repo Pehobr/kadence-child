@@ -213,24 +213,27 @@ body.left-menu-is-open {
 }
 
 /* ==========================================================================
-   OPRAVA NEFUNKČNÍCH ODKAZŮ V LEVÉM MENU (PROBLÉM S VRSTVENÍM)
+   OPRAVA NEFUNKČNÍCH ODKAZŮ V MOBILNÍCH MENU (PROBLÉM S VRSTVENÍM)
    ========================================================================== */
 
-/* Zajistíme, aby vnitřní panel menu správně pracoval s vrstvami. */
-#left-mobile-drawer .drawer-inner-left {
-    position: relative; /* Nutné pro fungování z-indexu u vnořených prvků */
-    z-index: 10;        /* Nastavíme vyšší vrstvu než má pozadí */
+/* Zajistíme, aby vnitřní panely menu správně pracovaly s vrstvami.
+   Panel s obsahem musí být nad překryvnou vrstvou. */
+#left-mobile-drawer .drawer-inner-left,
+#right-mobile-drawer .drawer-inner-right {
+    z-index: 10;        /* Nastavíme vyšší vrstvu než má překryvná vrstva */
 }
 
 /* Samotné navigační prvky nepotřebují žádné speciální vrstvení,
    pokud je jejich rodič správně nastaven. */
-#left-mobile-drawer .left-mobile-navigation {
+#left-mobile-drawer .left-mobile-navigation,
+#right-mobile-drawer .right-mobile-navigation {
     position: relative;
     z-index: 12;
 }
 
-/* Překryvná vrstva musí být naopak ve vrstvě nejnižší. */
-#left-mobile-drawer .drawer-overlay-left {
+/* Překryvné vrstvy musí být naopak ve vrstvě nejnižší, aby nepřekrývaly obsah. */
+#left-mobile-drawer .drawer-overlay-left,
+#right-mobile-drawer .drawer-overlay-right {
     z-index: 1; /* Nejnižší vrstva */
 }
 
@@ -239,6 +242,7 @@ body.left-menu-is-open {
    ========================================================================== */
 
 #left-mobile-drawer .drawer-inner-left,
+#right-mobile-drawer .drawer-inner-right,
 #mobile-drawer .drawer-inner {
     height: 100vh !important; /* Nastaví výšku na 100% výšky obrazovky */
 }
