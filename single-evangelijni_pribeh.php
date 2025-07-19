@@ -102,9 +102,11 @@ $parafraze_page = get_page_by_path($parafraze_page_slug, OBJECT, 'page');
                 <?php if ($podcast_page): ?>
                 <div id="podcast-view" class="tab-content">
                     <div class="podcast-player-container">
-                        <div class="podcast-source-content" style="display: none;">
-                            <?php echo apply_filters('the_content', $podcast_page->post_content); ?>
-                        </div>
+                        <?php
+                        // Přímo vykreslíme obsah. Pokud je v obsahu URL k audio souboru,
+                        // WordPress by měl automaticky vytvořit přehrávač (oEmbed).
+                        echo apply_filters('the_content', $podcast_page->post_content);
+                        ?>
                     </div>
                 </div>
                 <?php endif; ?>
