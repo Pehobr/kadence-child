@@ -23,7 +23,7 @@
     /* Posunutí obsahu stránky dolů, aby ho nepřekrývala fixní hlavička */
     #wrapper {
         /* Výchozí výška hlavičky na tabletu je 50px */
-        padding-top: 60px;
+        padding-top: 80px;
     }
 
     /* Posunutí hlavičky dolů, pokud je přihlášený uživatel a je vidět admin lišta */
@@ -36,7 +36,7 @@
 @media (max-width: 767px) {
     /* Zvýšení odsazení obsahu, protože hlavička je na mobilech vyšší (70px) */
     #wrapper {
-        padding-top: 70px;
+        padding-top: 80px;
     }
 }
 
