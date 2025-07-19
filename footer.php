@@ -50,7 +50,7 @@ do_action( 'kadence_after_content' );
     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'katalog' ) ) ); ?>" class="mobile-nav-icon"><i class="fa fa-list" aria-hidden="true"></i></a>
 
     <?php // Ikona 5: Odkaz na nastavení (pokud bude existovat) ?>
-    <a href="<?php echo esc_url( admin_url() ); ?>" class="mobile-nav-icon"><i class="fa fa-cog" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( site_url( '/nastaveni/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-cog" aria-hidden="true"></i></a>
 </div>
 <?php // ?>
 
