@@ -54,7 +54,7 @@
     color: #FFFFFF !important;
     /* Přepsání stylů z H3 na vlastní "obyčejné" písmo */
     font-family: var(--global-body-font-family, sans-serif); /* Použije základní písmo webu, ne písmo pro nadpisy */
-    font-size: 16px; /* Zde můžete nastavit libovolnou velikost v pixelech */
+    font-size: 17px; /* Zde můžete nastavit libovolnou velikost v pixelech */
     font-weight: 600; /* Můžete upravit (např. 400 pro normální, 700 pro tučné) */
     line-height: 1.4; /* Upraví řádkování pro lepší čitelnost */
 }
