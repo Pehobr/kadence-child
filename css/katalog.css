@@ -44,6 +44,7 @@
 .nav-tab:hover {
     color: #f5f2eb; /* Změní barvu textu na výraznější světlou. */
     border-bottom-color: #f5f2eb; /* Zviditelní spodní okraj tím, že mu dá stejnou světlou barvu. */
+background-color: transparent; /* ZAJISTÍ PRŮHLEDNÉ POZADÍ */
 }
 
 /* --- Správa viditelnosti obsahu --- */
