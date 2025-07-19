@@ -19,20 +19,24 @@
     }
 
     .mobile-nav-icon {
-        color: #FFFFFF; /* Bílá barva ikony */
+        color: #FFFFFF;
         text-decoration: none;
-        text-align: center;
-        flex-grow: 1;
-        padding: 10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 8px; /* Zaoblený čtvereček */
+        transition: background-color 0.3s ease;
     }
     
     .mobile-nav-icon .fa {
         font-size: 22px; /* Velikost ikon */
     }
 
-    .mobile-nav-icon-home .fa {
-        font-size: 26px; /* Větší velikost pro hlavní ikonu */
-        color: #F0E68C; /* Zlatá barva pro zvýraznění */
+    /* Styl pro aktivní ikonu - ta, která odpovídá aktuální stránce */
+    .mobile-nav-icon.active {
+        background-color: rgba(245, 242, 235, 0.15); /* Jemně průsvitná světlá barva */
     }
 
     /* Odsazení obsahu stránky, aby nebyl překryt lištou */
