@@ -50,57 +50,6 @@ do_action( 'kadence_after_content' );
 </div>
 <?php // ?>
 
-<!-- Left Mobile Drawer -->
-<div id="left-mobile-drawer" class="popup-drawer-left" aria-hidden="true">
-    <div class="drawer-inner-left">
-        <div class="drawer-header-left">
-            <button class="drawer-toggle-left close-drawer" aria-label="Zavřít menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="kadence-svg-icon kadence-x-svg"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-        <div class="drawer-content-left">
-            <?php
-            // Vykreslíme menu přiřazené k umístění 'leve_mobilni_menu'.
-            if ( has_nav_menu( 'leve_mobilni_menu' ) ) {
-                wp_nav_menu( array(
-                    'theme_location' => 'leve_mobilni_menu',
-                    'container'      => 'nav',
-                    'menu_class'     => 'left-mobile-navigation',
-                ) );
-            } else {
-                echo '<p style="padding: 1em;">Přiřaďte menu k umístění "Levé mobilní menu" v sekci Vzhled -> Menu.</p>';
-            }
-            ?>
-        </div>
-    </div>
-    <div class="drawer-overlay-left"></div>
-</div>
-
-<div id="right-mobile-drawer" class="popup-drawer-right" aria-hidden="true">
-    <div class="drawer-inner-right">
-        <div class="drawer-header-right">
-            <button class="drawer-toggle-right close-drawer" aria-label="Zavřít menu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="kadence-svg-icon kadence-x-svg"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-        <div class="drawer-content-right">
-            <?php
-            // Vykreslíme menu přiřazené k umístění 'prave_mobilni_menu'.
-            if ( has_nav_menu( 'prave_mobilni_menu' ) ) {
-                wp_nav_menu( array(
-                    'theme_location' => 'prave_mobilni_menu',
-                    'container'      => 'nav',
-                    'menu_class'     => 'right-mobile-navigation',
-                ) );
-            } else {
-                echo '<p style="padding: 1em;">Přiřaďte menu k umístění "Pravé mobilní menu" v sekci Vzhled -> Menu.</p>';
-            }
-            ?>
-        </div>
-    </div>
-    <div class="drawer-overlay-right"></div>
-</div>
-
 <?php wp_footer(); ?>
 </body>
 </html>

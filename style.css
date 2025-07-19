@@ -28,3 +28,31 @@ Updated: 2025-07-16 07:01:17
 .page-header {
     margin-bottom: 12px;
 }
+
+/*
+ * Skrytí sidebaru na mobilních zařízeních
+ */
+@media (max-width: 768px) {
+    #secondary {
+        display: none;
+    }
+}
+
+.popup-drawer .drawer-inner {
+    width: 100%;
+    transform: translateX(100%);
+    max-width: 90%;
+    right: 0;
+    top: 0;
+    overflow: auto;
+    background: #514332;
+    color: #fff;
+    bottom: 0;
+    opacity: 0;
+    position: fixed;
+    box-shadow: 0 0 2rem 0 rgba(0, 0, 0, .1);
+    display: flex
+;
+    flex-direction: column;
+    transition: transform .3s cubic-bezier(.77,.2,.05,1), opacity .25s cubic-bezier(.77,.2,.05,1);
+}

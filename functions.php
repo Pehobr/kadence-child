@@ -39,22 +39,6 @@ function moje_vlastni_styly() {
     // Získání cesty k adresáři šablony
     $theme_dir_uri = get_stylesheet_directory_uri();
 
-    // Načtení stylů pro mobilní hlavičku
-    wp_enqueue_style( 
-        'moje-mobilni-hlavicka', 
-        $theme_dir_uri . '/css/mobile-header.css', 
-        array(), // Závislosti, pokud nějaké jsou
-        '1.0.0'  // Verze souboru
-    );
-
-    // Načtení stylů pro mobilní menu
-    wp_enqueue_style( 
-        'moje-mobilni-menu', 
-        $theme_dir_uri . '/css/mobile-menus.css', 
-        array(), 
-        '1.0.0' 
-    );
-
     // Načtení stylů pro spodní lištu
     wp_enqueue_style( 
         'moje-mobilni-spodni-lista', 

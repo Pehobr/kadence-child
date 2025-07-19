@@ -9,8 +9,7 @@ get_header(); ?>
     <div class="content-container site-container">
         <main id="main" class="site-main">
             <header class="page-header">
-                <h1 class="page-title"><?php the_title(); ?></h1>
-            </header>
+<h1 class="page-title" style="text-align: center;"><?php the_title(); ?></h1>            </header>
 
             <div class="view-switcher">
                 <button class="nav-tab active" data-target="name-view">Podle názvů</button>
