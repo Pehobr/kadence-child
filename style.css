@@ -30,11 +30,15 @@ Updated: 2025-07-16 07:01:17
 }
 
 /*
- * Skrytí sidebaru na mobilních zařízeních
+ * Skrytí sidebaru na mobilních zařízeních a tabletech
  */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     #secondary {
         display: none;
+    }
+    /* Když je sidebar skrytý, hlavní obsah se musí roztáhnout na celou šířku */
+    .has-sidebar .content-container {
+        grid-template-columns: 1fr;
     }
 }
 

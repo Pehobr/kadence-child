@@ -68,14 +68,8 @@
 }
 
 
-/* === MOBILNÍ ZOBRAZENÍ (šířka 767px a méně) === */
-@media (max-width: 767px) {
-    /* Skrytí bočního menu na mobilu */
-    .post-type-archive-evangelijni_pribeh #secondary,
-    .page-template-template-pribehy-php #secondary {
-        display: none;
-    }
-
+/* === ZOBRAZENÍ PRO TABLETY A MOBILY (šířka 1024px a méně) === */
+@media (max-width: 1024px) {
     .post-type-archive-evangelijni_pribeh .entry.loop-entry .entry-title,
 .page-template-template-pribehy-php .entry.loop-entry .entry-title,
 .post-type-archive-evangelijni_pribeh .entry.loop-entry .entry-title a,
@@ -87,12 +81,6 @@
     font-weight: 600; /* Můžete upravit (např. 400 pro normální, 700 pro tučné) */
     line-height: 1.4; /* Upraví řádkování pro lepší čitelnost */
 }
-
-    /* Roztažení obsahu na celou šířku */
-    .post-type-archive-evangelijni_pribeh .content-container,
-    .page-template-template-pribehy-php .content-container {
-        grid-template-columns: 1fr;
-    }
 
     /* Přidání bočního odsazení na mobilu pro lepší čitelnost */
     .post-type-archive-evangelijni_pribeh .site-main,
