@@ -26,6 +26,9 @@ function child_theme_configurator_css() {
     } elseif ( is_page_template('page-katalog.php') ) {
         // Načte styly pouze pro stránku katalogu
         wp_enqueue_style( 'kniha-slova-katalog-styles', get_stylesheet_directory_uri() . '/css/katalog.css', array('chld_thm_cfg_child'), '1.0.0' );
+    } elseif ( is_page_template('template-vyhledavani-citaci.php') ) {
+        // Načte styly pouze pro stránku vyhledávání citací
+        wp_enqueue_style( 'kniha-slova-vyhledavani-citaci-styles', get_stylesheet_directory_uri() . '/css/vyhledavani-citaci.css', array('chld_thm_cfg_child'), '1.0.0' );
     }
 
     // Správné načtení knihovny ikon Font Awesome

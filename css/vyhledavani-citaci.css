@@ -1,0 +1,145 @@
+/* STYLY PRO STRÁNKU VYHLEDÁVÁNÍ CITACÍ */
+
+/* Přidání mezery nad hlavním nadpisem stránky */
+.page-citation-search .page-header {
+    margin-top: 1rem;
+}
+
+.page-citation-search .site-main {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.citation-search-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2em;
+    background: #514332;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.citation-search-form .form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 1.5em;
+}
+
+.citation-search-form .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.citation-search-form label {
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: #f5f2eb;
+}
+
+.citation-search-form .search-select,
+.citation-search-form .search-input {
+    padding: 10px;
+    border: 1px solid #7a6a58;
+    border-radius: 5px;
+    background-color: #f5f2eb;
+    color: #3e2f1c;
+    font-size: 16px;
+}
+
+.citation-search-form .search-input {
+    -moz-appearance: textfield; /* Skryje šipky u číselného inputu v Firefoxu */
+}
+.citation-search-form .search-input::-webkit-outer-spin-button,
+.citation-search-form .search-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.citation-search-form .form-submit {
+    text-align: center;
+}
+
+.citation-search-form .search-submit-btn {
+    background-color: #f5f2eb;
+    color: #3e2f1c;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.citation-search-form .search-submit-btn:hover {
+    background-color: #b7a99a;
+    transform: translateY(-2px);
+}
+
+.search-results-container {
+    margin-top: 3rem;
+}
+
+.search-results-container .results-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #f5f2eb;
+}
+
+.search-results-container.no-results {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 2em;
+    background-color: #514332;
+    border-radius: 8px;
+}
+
+/* Responzivita pro formulář */
+@media (max-width: 600px) {
+    .citation-search-form .form-row {
+        flex-direction: column;
+    }
+    .citation-search-form-container {
+        padding: 1.5em;
+    }
+}
+
+/* ==========================================================================
+   STYLY PRO TLAČÍTKA VÝSLEDKŮ (PŘEVZATO Z KATALOGU)
+   ========================================================================== */
+
+/* --- Mřížka pro tlačítka s příběhy --- */
+.katalog-grid {
+    display: grid;
+    /* Vytvoří tolik sloupců, kolik se jich vejde, každý s min. šířkou 220px */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.7rem; /* Mezera mezi tlačítky */
+    margin-top: 2rem; /* Prostor nad mřížkou */
+}
+
+/* --- Vzhled jednotlivého tlačítka v mřížce --- */
+.katalog-button {
+    background: #514332; /* Tmavě hnědé pozadí */
+    border-radius: 5px; /* Zaoblené rohy */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Jemný stín */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    align-items: center; /* Vertikální centrování */
+    justify-content: center; /* Horizontální centrování */
+    padding: 12px;
+    text-decoration: none;
+    text-align: center;
+    font-family: var(--global-heading-font-family);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.3;
+    color: #f5f2eb; /* Světlá barva písma */
+}
+
+/* --- Efekt při najetí myší na tlačítko --- */
+.katalog-button:hover {
+    transform: translateY(-5px); /* Posunutí nahoru */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* Zvětšení stínu */
+    color: #ffffff;
+}
