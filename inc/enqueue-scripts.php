@@ -10,6 +10,12 @@ function child_theme_configurator_css() {
     // Načte základní styl child šablony
     wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array( 'kadence-global','kadence-header','kadence-content','kadence-footer' ) );
 
+    // Načtení stylů pro mobilní hlavičku (fixní pozice atd.)
+    wp_enqueue_style( 'moje-mobilni-hlavicka', get_stylesheet_directory_uri() . '/css/mobile-header.css', array('chld_thm_cfg_child'), '1.0.0' );
+
+    // Načtení stylů pro spodní mobilní lištu
+    wp_enqueue_style( 'moje-mobilni-spodni-lista', get_stylesheet_directory_uri() . '/css/mobile-bottom-bar.css', array('chld_thm_cfg_child'), '1.0.0' );
+
     // Podmíněné načítání stylů podle typu stránky
     if ( is_singular('evangelijni_pribeh') ) {
         // Načte styly pouze pro detail příběhu

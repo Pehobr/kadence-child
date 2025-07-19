@@ -1,0 +1,48 @@
+/* STYLY PRO MOBILNÍ HLAVIČKU */
+/* Rozšíření platnosti na tablety (až do 1024px) a oprava zobrazení */
+@media (max-width: 1024px) {
+    /* KLÍČOVÁ ÚPRAVA: Vynutíme zobrazení mobilní hlavičky a skryjeme desktopovou */
+    .wp-site-blocks #mobile-header {
+        display: block;
+    }
+    .wp-site-blocks #main-header {
+        display: none;
+    }
+
+    /* === ZAFÍXOVÁNÍ HLAVIČKY === */
+    #mobile-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999; /* Vysoký z-index, aby byla hlavička vždy navrchu */
+        background: #3e2f1c; /* Barva pozadí z těla stránky pro sjednocení */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Jemný stín pro oddělení od obsahu */
+    }
+
+    /* Posunutí obsahu stránky dolů, aby ho nepřekrývala fixní hlavička */
+    #wrapper {
+        /* Výchozí výška hlavičky na tabletu je 50px */
+        padding-top: 50px;
+    }
+
+    /* Posunutí hlavičky dolů, pokud je přihlášený uživatel a je vidět admin lišta */
+    body.admin-bar #mobile-header {
+        top: 32px;
+    }
+}
+
+/* === ÚPRAVY PRO MENŠÍ MOBILNÍ ZAŘÍZENÍ === */
+@media (max-width: 767px) {
+    /* Zvýšení odsazení obsahu, protože hlavička je na mobilech vyšší (70px) */
+    #wrapper {
+        padding-top: 70px;
+    }
+}
+
+@media screen and (max-width: 782px) {
+    /* Posunutí hlavičky dolů pro vyšší admin lištu na menších obrazovkách */
+    body.admin-bar #mobile-header {
+        top: 46px;
+    }
+}
