@@ -4,8 +4,11 @@
  * Description: Šablona pro stránku s formulářem pro zadání hesla.
  */
 
-// Zpracujeme odeslání formuláře PŘED načtením hlavičky, abychom mohli přesměrovat
+// Zpracujeme případné odeslání formuláře (přihlášení)
 knihaslova_handle_password_form_login_page();
+
+// Zpracujeme případný požadavek na odhlášení
+knihaslova_handle_logout();
 
 get_header();
 ?>
@@ -14,8 +17,14 @@ get_header();
     <div class="content-container site-container">
         <main id="main" class="site-main">
             <?php
-            // Zobrazíme přihlašovací formulář
-            knihaslova_display_password_form();
+            // Zkontrolujeme, zda je uživatel přihlášený
+            if ( knihaslova_is_access_granted() ) {
+                // Pokud ano, zobrazíme zprávu o úspěchu a tlačítko pro odhlášení
+                knihaslova_display_success_message();
+            } else {
+                // Pokud ne, zobrazíme klasický přihlašovací formulář
+                knihaslova_display_password_form();
+            }
             ?>
         </main>
     </div>

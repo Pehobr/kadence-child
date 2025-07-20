@@ -103,3 +103,59 @@
     margin-top: 1.5em;
     margin-bottom: 1.5em;
 }
+
+/* === Styly pro zprávy a odhlašovací tlačítko === */
+
+/* Společný styl pro zprávy (úspěch i chyba) */
+.password-success,
+.password-error {
+    color: #ffffff !important;
+    padding: 1em;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+/* Zelené pozadí pro zprávy o úspěchu */
+.password-success {
+    background-color: #38A169; /* Zelená */
+}
+
+/* Červené pozadí pro chybové hlášky (již by mělo existovat, ale pro jistotu) */
+.password-error {
+    background-color: #9d2626; /* Červená */
+}
+
+/* Ikona pro úspěch */
+.password-form-wrapper h2 .fa-check-circle {
+    color: #48BB78; /* Světlejší zelená */
+    margin-right: 10px;
+}
+
+/* Styl pro odhlašovací tlačítko (podobný jako přihlašovací) */
+.logout-button {
+    display: inline-block; /* Zajistí správné fungování paddingu a marginu */
+    margin-top: 1em;
+    background: #7a6a58; /* Mírně odlišná barva pro odlišení */
+    border: 1px solid #9c8f7e;
+    border-bottom-color: #514332;
+    border-right-color: #514332;
+    width: auto; /* Automatická šířka podle obsahu */
+    padding: 12px 30px;
+    font-family: var(--global-heading-font-family);
+    font-weight: 700;
+    font-size: 19px;
+    color: #f5f2eb;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s;
+}
+
+.logout-button:hover {
+    background: #8b7c69;
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}

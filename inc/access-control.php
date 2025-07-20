@@ -3,58 +3,62 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 //======================================================================
-// 7. KONTROLA PŘÍSTUPU POMOCÍ HESLA
+// 7. KONTROLA PŘÍSTUPU POMOCÍ HESLA (finální verze s čárkami)
 //======================================================================
 
 /**
  * Spustí PHP session, pokud ještě neběží.
  */
 function knihaslova_start_session() {
-    if ( ! session_id() ) {
+    if ( ! session_id() && ! headers_sent() ) {
         session_start();
     }
 }
-add_action( 'init', 'knihaslova_start_session' );
+add_action( 'init', 'knihaslova_start_session', 1 );
 
 /**
  * Zpracuje odeslaný formulář s heslem na přihlašovací stránce.
  */
 function knihaslova_handle_password_form_login_page() {
     if ( isset( $_POST['knihaslova_password_submit'] ) && isset( $_POST['access_password'] ) ) {
-        // Získáme uložená hesla z databáze
         $saved_passwords_raw = get_option( 'knihaslova_passwords', '' );
-        $saved_passwords = explode( "\n", $saved_passwords_raw );
-        $saved_passwords = array_map( 'trim', $saved_passwords ); // Odstraníme bílé znaky
-
+        // --- ZMĚNA ZDE: Hesla nyní rozdělujeme podle ČÁRKY ---
+        $saved_passwords = array_map( 'trim', explode( ",", $saved_passwords_raw ) );
         $submitted_password = trim( $_POST['access_password'] );
 
-        // Zkontrolujeme, zda zadané heslo existuje v poli uložených hesel
         if ( in_array( $submitted_password, $saved_passwords ) && !empty($submitted_password) ) {
             $_SESSION['knihaslova_access_granted'] = true;
-            unset( $_SESSION['knihaslova_access_error'] ); // Smažeme případnou starou chybu
-
-            // Přesměrujeme na archiv příběhů po úspěšném přihlášení
-            $redirect_url = get_post_type_archive_link('evangelijni_pribeh');
-            if (!$redirect_url) {
-                $redirect_url = home_url('/');
-            }
-            wp_redirect( $redirect_url );
-            exit;
-
+            $_SESSION['knihaslova_success_message'] = 'Přihlášení proběhlo úspěšně.';
+            unset( $_SESSION['knihaslova_access_error'] );
         } else {
-            // Nastavíme chybovou zprávu
             $_SESSION['knihaslova_access_error'] = 'Nesprávné heslo. Zkuste to prosím znovu.';
-
-            // Přesměrujeme zpět na přihlašovací stránku, abychom zabránili opětovnému odeslání formuláře
-            wp_redirect( $_SERVER['REQUEST_URI'] );
-            exit;
         }
+
+        wp_redirect( $_SERVER['REQUEST_URI'] );
+        exit;
+    }
+}
+
+/**
+ * Zpracuje požadavek na ODHLÁŠENÍ.
+ */
+function knihaslova_handle_logout() {
+    if ( isset($_GET['action']) && $_GET['action'] == 'knihaslova_logout' ) {
+        if ( !isset( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'knihaslova_logout_nonce' ) ) {
+            wp_die('Bezpečnostní kontrola selhala.', 'Chyba');
+        }
+
+        unset($_SESSION['knihaslova_access_granted']);
+        unset($_SESSION['knihaslova_success_message']);
+        $_SESSION['knihaslova_logout_message'] = 'Byli jste úspěšně odhlášeni.';
+        
+        wp_redirect( get_permalink() );
+        exit;
     }
 }
 
 /**
  * Zkontroluje, zda má uživatel platný přístup.
- * @return bool True pokud je přístup povolen, jinak false.
  */
 function knihaslova_is_access_granted() {
     return isset( $_SESSION['knihaslova_access_granted'] ) && $_SESSION['knihaslova_access_granted'] === true;
@@ -67,14 +71,17 @@ function knihaslova_display_password_form() {
     ?>
     <div class="password-form-container">
         <div class="password-form-wrapper">
-            <h2><i class="fa fa-lock" aria-hidden="true"></i> Prémiový obsah</h2>
-            <p>Pro odemčení prémiových záložek na stránkách příběhů zadejte prosím přístupové heslo.</p>
+            <h2><i class="fa fa-lock" aria-hidden="true"></i> Obsah pro kněze</h2>
+            <p>Pro odemčení neveřejných záložek na stránkách příběhů zadejte prosím přístupové heslo.</p>
 
             <?php
-            // Zobrazíme chybovou zprávu, pokud existuje
             if ( isset( $_SESSION['knihaslova_access_error'] ) ) {
                 echo '<p class="password-error">' . esc_html( $_SESSION['knihaslova_access_error'] ) . '</p>';
-                unset( $_SESSION['knihaslova_access_error'] ); // Smažeme zprávu po zobrazení
+                unset( $_SESSION['knihaslova_access_error'] );
+            }
+            if ( isset( $_SESSION['knihaslova_logout_message'] ) ) {
+                echo '<p class="password-success">' . esc_html( $_SESSION['knihaslova_logout_message'] ) . '</p>';
+                unset( $_SESSION['knihaslova_logout_message'] );
             }
             ?>
 
@@ -85,6 +92,28 @@ function knihaslova_display_password_form() {
                 </div>
                 <button type="submit" name="knihaslova_password_submit">Odemknout obsah</button>
             </form>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Vykreslí zprávu o úspěšném přihlášení a tlačítko pro odhlášení.
+ */
+function knihaslova_display_success_message() {
+    $logout_url = wp_nonce_url( add_query_arg('action', 'knihaslova_logout'), 'knihaslova_logout_nonce' );
+    ?>
+    <div class="password-form-container">
+        <div class="password-form-wrapper">
+            <h2><i class="fa fa-check-circle" aria-hidden="true"></i> Přihlášení úspěšné</h2>
+            
+            <?php
+            if ( isset( $_SESSION['knihaslova_success_message'] ) ) {
+                echo '<p class="password-success">' . esc_html( $_SESSION['knihaslova_success_message'] ) . '</p>';
+            }
+            ?>
+            <p>Nyní můžete procházet neveřejný obsah určený pro kněze.</p>
+            <a href="<?php echo esc_url($logout_url); ?>" class="button logout-button">Odhlásit se</a>
         </div>
     </div>
     <?php
