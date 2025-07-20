@@ -31,3 +31,24 @@ require_once $inc_dir . 'admin-settings.php';
 
 // 6. Vlastní úpravy a funkce
 require_once $inc_dir . 'custom-functions.php';
+
+// 7. Kontrola přístupu chráněného heslem
+require_once $inc_dir . 'access-control.php';
+
+/**
+ * Načte speciální CSS soubor pouze pro přihlašovací stránku.
+ */
+function knihaslova_enqueue_login_styles() {
+    // Zkontrolujeme, zda se jedná o stránku, která používá naši přihlašovací šablonu
+    if ( is_page_template('template-login.php') ) {
+        // Načteme CSS soubor
+        wp_enqueue_style(
+            'kniha-slova-login-style', // Unikátní název stylu
+            get_stylesheet_directory_uri() . '/css/login-style.css', // Cesta k souboru
+            array(), // Případné závislosti (nejsou potřeba)
+            '1.0.0' // Verze souboru
+        );
+    }
+}
+// Připojíme naši funkci k háku 'wp_enqueue_scripts'
+add_action( 'wp_enqueue_scripts', 'knihaslova_enqueue_login_styles' );
