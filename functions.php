@@ -52,3 +52,25 @@ function knihaslova_enqueue_login_styles() {
 }
 // Připojíme naši funkci k háku 'wp_enqueue_scripts'
 add_action( 'wp_enqueue_scripts', 'knihaslova_enqueue_login_styles' );
+
+/**
+ * Změní výchozí řazení stránek v administraci WordPressu.
+ * Stránky budou seřazeny podle data vytvoření (od nejnovějších).
+ */
+function knihaslova_zmenit_razeni_stranek_v_adminu( $query ) {
+    // Ujistíme se, že jsme v administraci, jedná se o hlavní dotaz
+    // a že jsme na stránce se seznamem stránek ('page').
+    if ( is_admin() && $query->is_main_query() && $query->get('post_type') === 'page' ) {
+        
+        // Zkontrolujeme, zda není řazení již nastaveno uživatelem (kliknutím na sloupec)
+        if ( ! isset( $_GET['orderby'] ) ) {
+            // Nastavíme řazení podle data
+            $query->set( 'orderby', 'date' );
+            
+            // Nastavíme směr řazení na sestupný (nejnovější nahoře)
+            $query->set( 'order', 'DESC' );
+        }
+    }
+}
+// Připojíme naši funkci k háku 'pre_get_posts'
+add_action( 'pre_get_posts', 'knihaslova_zmenit_razeni_stranek_v_adminu' );
