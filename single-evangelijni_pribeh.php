@@ -132,14 +132,13 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                 <?php endif; ?>
                 
                 <?php // --- Obsah chráněné záložky --- ?>
-                <?php if ($is_access_granted && $pro_kneze_page): ?>
-                    <div id="pro-kneze-view" class="tab-content">
-                        <div class="analysis-content content-to-copy-wrapper">
-                            <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#pro-kneze-view .copy-target"><i class="fa fa-clone" aria-hidden="true"></i></button>
-                            <div class="copy-target"><?php echo apply_filters('the_content', $pro_kneze_page->post_content); ?></div>
-                        </div>
-                    </div>
-                <?php endif; ?>
+<?php if ($is_access_granted && $pro_kneze_page): ?>
+    <div id="pro-kneze-view" class="tab-content">
+        <div class="analysis-content">
+            <?php echo apply_filters('the_content', $pro_kneze_page->post_content); ?>
+        </div>
+    </div>
+<?php endif; ?>
 
             </div>
         </main>
