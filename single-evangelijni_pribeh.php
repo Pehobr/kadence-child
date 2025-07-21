@@ -37,18 +37,12 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     <button class="nav-tab active" data-target="evangelists-view">Evangelisté</button>
                     <button class="nav-tab" data-target="translations-view">Překlady</button>
                     
-                    <?php // --- NOVÁ ZÁLOŽKA VÝKLAD --- ?>
+                    <?php // --- ZÁLOŽKA VÝKLAD --- ?>
                     <button class="nav-tab" data-target="vyklad-view">Výklad</button>
                     
-                    <?php // --- Ostatní záložky --- ?>
-                    <?php if ($comparison_page): ?>
-                        <button class="nav-tab" data-target="text-comparison-view">Srovnání</button>
-                    <?php endif; ?>
-                    <?php if ($parafraze_page): ?>
-                        <button class="nav-tab" data-target="parafraze-view">Spojení</button>
-                    <?php endif; ?>
-                    <?php if ($podcast_page): ?>
-                        <button class="nav-tab" data-target="podcast-view">Podcast</button>
+                    <?php // --- NOVÁ ZÁLOŽKA DALŠÍ (s podzáložkami) --- ?>
+                    <?php if ($comparison_page || $parafraze_page || $podcast_page): ?>
+                        <button class="nav-tab" data-target="dalsi-view">Další</button>
                     <?php endif; ?>
 
                     <?php // --- Chráněná záložka --- ?>
@@ -65,7 +59,7 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     <?php set_query_var('story_data', $story_data); get_template_part('template-parts/content-translations'); ?>
                 </div>
 
-                <?php // --- OBSAH NOVÉ ZÁLOŽKY VÝKLAD --- ?>
+                <?php // --- OBSAH ZÁLOŽKY VÝKLAD --- ?>
                 <div id="vyklad-view" class="tab-content">
                     
                     <div class="evangelist-switcher sub-switcher">
@@ -83,29 +77,50 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     </div>
                 </div>
 
-                <?php // --- Obsah ostatních záložek --- ?>
-                <?php if ($comparison_page): ?>
-                    <div id="text-comparison-view" class="tab-content">
-                        <div class="analysis-content content-to-copy-wrapper">
-                            <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#text-comparison-view .copy-target"><i class="fa fa-clone" aria-hidden="true"></i></button>
-                            <div class="copy-target"><?php echo apply_filters('the_content', $comparison_page->post_content); ?></div>
-                        </div>
+                <?php // --- OBSAH NOVÉ ZÁLOŽKY DALŠÍ --- ?>
+                <?php if ($comparison_page || $parafraze_page || $podcast_page): ?>
+                <div id="dalsi-view" class="tab-content">
+                    
+                    <div class="evangelist-switcher sub-switcher">
+                        <?php $dalsi_tab_is_active = true; ?>
+                        <?php if ($comparison_page): ?>
+                            <button class="nav-tab <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>" data-target="#text-comparison-view">Srovnání</button>
+                        <?php endif; ?>
+                        <?php if ($parafraze_page): ?>
+                            <button class="nav-tab <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>" data-target="#parafraze-view">Spojení</button>
+                        <?php endif; ?>
+                        <?php if ($podcast_page): ?>
+                            <button class="nav-tab <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>" data-target="#podcast-view">Podcast</button>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
 
-                <?php if ($parafraze_page): ?>
-                    <div id="parafraze-view" class="tab-content">
-                        <div class="analysis-content content-to-copy-wrapper">
-                            <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#parafraze-view .copy-target"><i class="fa fa-clone" aria-hidden="true"></i></button>
-                            <div class="copy-target"><?php echo apply_filters('the_content', $parafraze_page->post_content); ?></div>
-                        </div>
-                    </div>
-                <?php endif; ?>
+                    <div class="sub-content-container">
+                        <?php $dalsi_tab_is_active = true; ?>
+                        <?php if ($comparison_page): ?>
+                            <div id="text-comparison-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
+                                <div class="analysis-content content-to-copy-wrapper">
+                                    <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#text-comparison-view .copy-target"><i class="fa fa-clone" aria-hidden="true"></i></button>
+                                    <div class="copy-target"><?php echo apply_filters('the_content', $comparison_page->post_content); ?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
-                <?php if ($podcast_page): ?>
-                    <div id="podcast-view" class="tab-content">
-                        <div class="podcast-player-container"><?php echo apply_filters('the_content', $podcast_page->post_content); ?></div>
+                        <?php if ($parafraze_page): ?>
+                            <div id="parafraze-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
+                                <div class="analysis-content content-to-copy-wrapper">
+                                    <button class="copy-to-clipboard-btn" title="Zkopírovat text" data-clipboard-target="#parafraze-view .copy-target"><i class="fa fa-clone" aria-hidden="true"></i></button>
+                                    <div class="copy-target"><?php echo apply_filters('the_content', $parafraze_page->post_content); ?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($podcast_page): ?>
+                            <div id="podcast-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
+                                <div class="podcast-player-container"><?php echo apply_filters('the_content', $podcast_page->post_content); ?></div>
+                            </div>
+                        <?php endif; ?>
                     </div>
+                </div>
                 <?php endif; ?>
                 
                 <?php // --- Obsah chráněné záložky --- ?>
