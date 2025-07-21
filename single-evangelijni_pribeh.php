@@ -36,10 +36,11 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     <?php // --- Veřejné záložky --- ?>
                     <button class="nav-tab active" data-target="evangelists-view">Evangelisté</button>
                     <button class="nav-tab" data-target="translations-view">Překlady</button>
-                    <button class="nav-tab" data-target="analysis-view">Exegeze</button>
-                    <button class="nav-tab" data-target="spiritual-view">Výklad</button>
                     
-                    <?php // --- Tyto záložky jsou nyní VŽDY viditelné --- ?>
+                    <?php // --- NOVÁ ZÁLOŽKA VÝKLAD --- ?>
+                    <button class="nav-tab" data-target="vyklad-view">Výklad</button>
+                    
+                    <?php // --- Ostatní záložky --- ?>
                     <?php if ($comparison_page): ?>
                         <button class="nav-tab" data-target="text-comparison-view">Srovnání</button>
                     <?php endif; ?>
@@ -50,7 +51,7 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                         <button class="nav-tab" data-target="podcast-view">Podcast</button>
                     <?php endif; ?>
 
-                    <?php // --- Chráněná záložka (zobrazí se pouze po přihlášení) --- ?>
+                    <?php // --- Chráněná záložka --- ?>
                     <?php if ($is_access_granted && $pro_kneze_page): ?>
                         <button class="nav-tab" data-target="pro-kneze-view">Pro kněze</button>
                     <?php endif; ?>
@@ -63,14 +64,26 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                 <div id="translations-view" class="tab-content">
                     <?php set_query_var('story_data', $story_data); get_template_part('template-parts/content-translations'); ?>
                 </div>
-                <div id="analysis-view" class="tab-content">
-                    <?php set_query_var('story_data', $story_data); set_query_var('post_slug', $post_slug); get_template_part('template-parts/content-exegesis'); ?>
-                </div>
-                <div id="spiritual-view" class="tab-content">
-                    <?php set_query_var('story_data', $story_data); set_query_var('post_slug', $post_slug); get_template_part('template-parts/content-spiritual'); ?>
+
+                <?php // --- OBSAH NOVÉ ZÁLOŽKY VÝKLAD --- ?>
+                <div id="vyklad-view" class="tab-content">
+                    
+                    <div class="evangelist-switcher sub-switcher">
+                        <button class="nav-tab active" data-target="#analysis-view">Exegeze</button>
+                        <button class="nav-tab" data-target="#spiritual-view">Duchovní výklad</button>
+                    </div>
+
+                    <div class="sub-content-container">
+                        <div id="analysis-view" class="tab-content-pane active">
+                            <?php set_query_var('story_data', $story_data); set_query_var('post_slug', $post_slug); get_template_part('template-parts/content-exegesis'); ?>
+                        </div>
+                        <div id="spiritual-view" class="tab-content-pane">
+                            <?php set_query_var('story_data', $story_data); set_query_var('post_slug', $post_slug); get_template_part('template-parts/content-spiritual'); ?>
+                        </div>
+                    </div>
                 </div>
 
-                <?php // --- Obsah nyní veřejných záložek --- ?>
+                <?php // --- Obsah ostatních záložek --- ?>
                 <?php if ($comparison_page): ?>
                     <div id="text-comparison-view" class="tab-content">
                         <div class="analysis-content content-to-copy-wrapper">
@@ -95,7 +108,7 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     </div>
                 <?php endif; ?>
                 
-                <?php // --- Obsah chráněné záložky (zobrazí se pouze po přihlášení) --- ?>
+                <?php // --- Obsah chráněné záložky --- ?>
                 <?php if ($is_access_granted && $pro_kneze_page): ?>
                     <div id="pro-kneze-view" class="tab-content">
                         <div class="analysis-content content-to-copy-wrapper">

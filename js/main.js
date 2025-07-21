@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Funkce pro obsluhu přepínání podzáložek (např. evangelistů v Exegezi).
+     * Funkce pro obsluhu přepínání podzáložek (např. evangelistů v Exegezi nebo Exegeze/Duchovní výklad).
      * Funguje pro jakýkoli přepínač s třídou .evangelist-switcher.
      */
     function setupEvangelistSwitchers() {
@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.classList.add('active');
 
                     // Skrytí veškerého obsahu v příslušném kontejneru
-                    const allContentPanes = contentContainer.querySelectorAll('.evangelist-translation-content, .exegesis-content, .spiritual-content');
+                    // ÚPRAVA: Přidán selektor .tab-content-pane pro nové podzáložky
+                    const allContentPanes = contentContainer.querySelectorAll('.evangelist-translation-content, .exegesis-content, .spiritual-content, .tab-content-pane');
                     allContentPanes.forEach(content => content.classList.remove('active'));
 
                     // Zobrazení cílového obsahu
@@ -119,4 +120,3 @@ document.addEventListener('DOMContentLoaded', function () {
     setupCopyToClipboard();
 
 });
-

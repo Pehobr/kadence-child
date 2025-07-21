@@ -409,3 +409,33 @@
     color: #ffffff;
     border-color: #7bdcb5;
 }
+
+/* === MOBILNÍ ZOBRAZENÍ (šířka 767px a méně) === */
+
+@media (max-width: 767px) {
+    /* ... stávající kód ... */
+}
+
+/* === Styly pro vnořený přepínač záložek (Exegeze, Duchovní výklad) === */
+.story-detail .sub-switcher {
+    margin-left: 20px;
+    margin-right: 20px;
+    border-color: #7a6a58; /* Světlejší okraj pro odlišení */
+    margin-bottom: 20px;
+}
+
+/* Skryje obsah vnořených záložek ve výchozím stavu */
+.tab-content-pane {
+    display: none;
+}
+
+/* Zobrazí pouze aktivní obsah */
+.tab-content-pane.active {
+    display: block;
+}
+
+
+/* === Styly pro záložku Exegeze === */
+
+/* Kontejner pro vnořené záložky v Exegezi. */
+.exegesis-switcher {
