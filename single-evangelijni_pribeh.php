@@ -18,6 +18,10 @@ $parafraze_page = get_page_by_path($parafraze_page_slug, OBJECT, 'page');
 $podcast_page_slug = $post_slug . '-podcast';
 $podcast_page = get_page_by_path($podcast_page_slug, OBJECT, 'page');
 
+// --- NOVÉ: Načtení stránky pro infografiku ---
+$infografika_page_slug = $post_slug . '-infografika';
+$infografika_page = get_page_by_path($infografika_page_slug, OBJECT, 'page');
+
 // Načtení stránky pro záložku "Pro kněze"
 $pro_kneze_page_slug = $post_slug . '-pro-kneze';
 $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
@@ -36,12 +40,10 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     <?php // --- Veřejné záložky --- ?>
                     <button class="nav-tab active" data-target="evangelists-view">Evangelisté</button>
                     <button class="nav-tab" data-target="translations-view">Překlady</button>
-                    
-                    <?php // --- ZÁLOŽKA VÝKLAD --- ?>
                     <button class="nav-tab" data-target="vyklad-view">Výklad</button>
                     
-                    <?php // --- NOVÁ ZÁLOŽKA DALŠÍ (s podzáložkami) --- ?>
-                    <?php if ($comparison_page || $parafraze_page || $podcast_page): ?>
+                    <?php // --- ZÁLOŽKA DALŠÍ (s podzáložkami) --- ?>
+                    <?php if ($comparison_page || $parafraze_page || $podcast_page || $infografika_page): ?>
                         <button class="nav-tab" data-target="dalsi-view">Další</button>
                     <?php endif; ?>
 
@@ -58,15 +60,11 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                 <div id="translations-view" class="tab-content">
                     <?php set_query_var('story_data', $story_data); get_template_part('template-parts/content-translations'); ?>
                 </div>
-
-                <?php // --- OBSAH ZÁLOŽKY VÝKLAD --- ?>
                 <div id="vyklad-view" class="tab-content">
-                    
                     <div class="evangelist-switcher sub-switcher">
                         <button class="nav-tab active" data-target="#analysis-view">Exegeze</button>
                         <button class="nav-tab" data-target="#spiritual-view">Duchovní výklad</button>
                     </div>
-
                     <div class="sub-content-container">
                         <div id="analysis-view" class="tab-content-pane active">
                             <?php set_query_var('story_data', $story_data); set_query_var('post_slug', $post_slug); get_template_part('template-parts/content-exegesis'); ?>
@@ -77,8 +75,8 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                     </div>
                 </div>
 
-                <?php // --- OBSAH NOVÉ ZÁLOŽKY DALŠÍ --- ?>
-                <?php if ($comparison_page || $parafraze_page || $podcast_page): ?>
+                <?php // --- OBSAH ZÁLOŽKY DALŠÍ --- ?>
+                <?php if ($comparison_page || $parafraze_page || $podcast_page || $infografika_page): ?>
                 <div id="dalsi-view" class="tab-content">
                     
                     <div class="evangelist-switcher sub-switcher">
@@ -92,6 +90,10 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                         <?php if ($podcast_page): ?>
                             <button class="nav-tab <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>" data-target="#podcast-view">Podcast</button>
                         <?php endif; ?>
+                        <?php // --- NOVÉ: Tlačítko pro infografiku --- ?>
+                        <?php if ($infografika_page): ?>
+                            <button class="nav-tab <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>" data-target="#infografika-view">Infografika</button>
+                        <?php endif; ?>
                     </div>
 
                     <div class="sub-content-container">
@@ -104,7 +106,6 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                                 </div>
                             </div>
                         <?php endif; ?>
-
                         <?php if ($parafraze_page): ?>
                             <div id="parafraze-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
                                 <div class="analysis-content content-to-copy-wrapper">
@@ -113,10 +114,17 @@ $pro_kneze_page = get_page_by_path($pro_kneze_page_slug, OBJECT, 'page');
                                 </div>
                             </div>
                         <?php endif; ?>
-
                         <?php if ($podcast_page): ?>
-                            <div id="podcast-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
+                             <div id="podcast-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
                                 <div class="podcast-player-container"><?php echo apply_filters('the_content', $podcast_page->post_content); ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <?php // --- NOVÉ: Obsah pro infografiku --- ?>
+                        <?php if ($infografika_page): ?>
+                            <div id="infografika-view" class="tab-content-pane <?php if ($dalsi_tab_is_active) { echo 'active'; $dalsi_tab_is_active = false; } ?>">
+                                <div class="infographic-content">
+                                    <?php echo apply_filters('the_content', $infografika_page->post_content); ?>
+                                </div>
                             </div>
                         <?php endif; ?>
                     </div>
