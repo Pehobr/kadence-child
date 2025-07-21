@@ -29,15 +29,45 @@ function knihaslova_admin_page_html() {
     if (!current_user_can('manage_options')) {
         return;
     }
+
+    // Zkontroluje, zda bylo stisknuto tlačítko pro manuální aktualizaci
+    if (isset($_POST['knihaslova_manual_update_submit'])) {
+        // Bezpečnostní kontrola (nonce)
+        check_admin_referer('knihaslova_manual_update_nonce');
+
+        // Zavolá funkci pro aktualizaci dat
+        $success = knihaslova_manual_data_update();
+
+        // Zobrazí zprávu o výsledku
+        if ($success) {
+            echo '<div class="notice notice-success is-dismissible"><p>Data z Google Sheets byla úspěšně načtena a uložena.</p></div>';
+        } else {
+            echo '<div class="notice notice-error is-dismissible"><p>Při načítání dat z Google Sheets došlo k chybě. Zkontrolujte chybové logy serveru pro více informací.</p></div>';
+        }
+    }
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        
         <form action="options.php" method="post">
             <?php
             settings_fields('knihaslova_admin_settings');
             do_settings_sections('kniha_slova_admin');
             submit_button('Uložit nastavení');
             ?>
+        </form>
+
+        <hr> 
+
+        <form method="post" action="">
+            <h2>Manuální aktualizace dat</h2>
+            <p>Kliknutím na tlačítko níže smažete stávající uložená data a nahrajete nová, aktuální data z Google Sheets. Tento proces může trvat několik sekund.</p>
+            <p><strong>Použijte toto tlačítko vždy, když přidáte nebo upravíte příběh v Google tabulce.</strong></p>
+            <?php
+            // Přidání bezpečnostního klíče (nonce)
+            wp_nonce_field('knihaslova_manual_update_nonce');
+            ?>
+            <input type="submit" name="knihaslova_manual_update_submit" id="knihaslova_manual_update_submit" class="button button-primary" value="Načíst a uložit data z Google Sheets">
         </form>
     </div>
     <?php
@@ -47,22 +77,8 @@ function knihaslova_admin_page_html() {
  * Registruje nastavení, sekce a pole pro admin stránku.
  */
 function knihaslova_settings_init() {
-    // Sekce pro vývojáře
-    register_setting('knihaslova_admin_settings', 'knihaslova_dev_options');
-    add_settings_section(
-        'knihaslova_dev_section',
-        'Vývojářské nástroje',
-        'knihaslova_dev_section_cb',
-        'kniha_slova_admin'
-    );
-    add_settings_field(
-        'force_clear_transients',
-        'Vynutit smazání cache',
-        'knihaslova_force_clear_transients_cb',
-        'kniha_slova_admin',
-        'knihaslova_dev_section'
-    );
-
+    // Sekce pro vývojáře byla odebrána, protože již není potřeba
+    
     // Sekce pro hesla
     register_setting('knihaslova_admin_settings', 'knihaslova_passwords');
     add_settings_section(
@@ -80,25 +96,6 @@ function knihaslova_settings_init() {
     );
 }
 add_action('admin_init', 'knihaslova_settings_init');
-
-// Callbacky pro sekci vývojářů
-function knihaslova_dev_section_cb($args) {
-    echo '<p id="' . esc_attr($args['id']) . '">Zde můžete spravovat pokročilé funkce webu.</p>';
-}
-
-function knihaslova_force_clear_transients_cb() {
-    $options = get_option('knihaslova_dev_options');
-    $checked = isset($options['force_clear_transients']) && $options['force_clear_transients'] === 'on';
-    ?>
-    <label>
-        <input type="checkbox" name="knihaslova_dev_options[force_clear_transients]" value="on" <?php checked($checked); ?>>
-        Aktivovat (Při každém načtení stránky příběhu se smaže její dočasná mezipaměť).
-    </label>
-    <p class="description">
-        <strong>Varování:</strong> Tuto volbu zapínejte pouze dočasně pro vývoj a ladění.
-    </p>
-    <?php
-}
 
 // Callbacky pro sekci hesel
 function knihaslova_passwords_section_cb($args) {
