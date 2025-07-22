@@ -1,18 +1,24 @@
+/* =================================================================== */
+/* Styly pro stránku "Liturgický rok"                      */
+/* =================================================================== */
+
+/* --- Obecný kontejner pro seznam --- */
 .liturgical-year-list {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 0; /* Upraveno pro lepší zarovnání */
 }
 
+/* --- Styly pro řádek neděle (Desktop) --- */
 .liturgical-sunday-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    border: 1px solid #d8d5d1; /* Mírně upravený okraj pro lepší kontrast */
-    border-radius: 8px;
     margin-bottom: 15px;
-    background-color: #f5f2eb; /* ZMĚNA: Nová krémová barva pozadí */
+    border: 1px solid #d8d5d1;
+    border-radius: 8px;
+    background-color: #f5f2eb; /* Vaše krémová barva pozadí */
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s ease;
 }
@@ -21,19 +27,21 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+/* Styl pro neděle bez přiřazeného příběhu */
 .liturgical-sunday-item.no-story {
     background-color: #f9f9f9;
     opacity: 0.8;
 }
 
+/* Levá část s textem */
 .sunday-details {
-    flex-grow: 1;
+    flex-grow: 1; /* Zajistí, že zabere dostupné místo */
 }
 
 .sunday-season {
     display: block;
     font-size: 0.85em;
-    color: #6c757d; /* Tmavě šedá */
+    color: #6c757d;
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 5px;
@@ -43,36 +51,66 @@
     margin: 0;
     font-size: 1.25em;
     font-weight: 500;
-    color: #212529; /* Tmavší černá pro lepší čitelnost */
+    color: #212529;
 }
 
+/* Pravá část s tlačítkem */
 .sunday-action {
-    flex-shrink: 0;
-    margin-left: 20px;
+    flex-shrink: 0; /* Zabrání smrštění tlačítka */
+    margin-left: 20px; /* Odsazení na desktopu */
 }
 
-/* Styly pro tlačítka ponecháme tak, aby odpovídaly zbytku webu */
-/* Tyto třídy se pravděpodobně načítají z tvého hlavního CSS souboru */
-.button {
-    padding: 10px 15px;
-    text-decoration: none;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    font-weight: 600;
-    text-align: center;
-    display: inline-block;
+/* Skrytí mobilního textu v tlačítku na desktopu */
+.button .button-text-mobile {
+    display: none;
 }
 
-.button-primary {
-    background-color: #0073aa; /* Standardní modrá WordPressu */
-    color: white;
-    border-color: #006799;
-}
 
-.button[disabled] {
-    background-color: #e9ecef; /* Světle šedá */
-    color: #6c757d;
-    cursor: not-allowed;
-    border-color: #dee2e6;
+/* =================================================================== */
+/* Responzivní úpravy pro mobilní zařízení                 */
+/* =================================================================== */
+
+@media (max-width: 768px) {
+
+    /* Kontejner řádku se přeuspořádá pod sebe */
+    .liturgical-sunday-item {
+        flex-direction: column;
+        align-items: stretch; /* Prvky se roztáhnou na celou šířku */
+        padding: 15px;
+    }
+
+    /* Detaily neděle (název) */
+    .sunday-details {
+        text-align: center;
+        margin-bottom: 15px;
+        padding-right: 0;
+    }
+
+    /* Na mobilu skryjeme "Mezidobí", "Doba postní" atd. */
+    .sunday-season {
+        display: none;
+    }
+
+    /* Kontejner tlačítka */
+    .sunday-action {
+        margin-left: 0; /* ZRUŠENÍ nežádoucího odsazení na mobilu */
+    }
+
+    /* Tlačítko se roztáhne na celou šířku a vycentruje text */
+    .sunday-action .button,
+    .sunday-action button[disabled] {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box; /* Zajistí správné chování width: 100% */
+    }
+
+    /* Skrytí plného textu tlačítka na mobilu */
+    .sunday-action .button .button-text-full {
+        display: none;
+    }
+
+    /* Zobrazení krátkého textu (jen citace) v tlačítku na mobilu */
+    .sunday-action .button .button-text-mobile {
+        display: inline;
+    }
 }
