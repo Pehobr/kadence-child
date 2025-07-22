@@ -14,8 +14,7 @@ get_header(); // Načte hlavičku webu
         <main id="main" class="site-main" role="main">
 
             <?php
-            // --- STYLY PRO MOBILNÍ ZOBRAZENÍ ---
-            // Tyto styly zajistí správné přeuspořádání na malých obrazovkách.
+            // --- STYLY PRO STRÁNKU ---
             ?>
             <style>
                 /* Základní styly pro desktop */
@@ -31,6 +30,7 @@ get_header(); // Načte hlavičku webu
                 }
                 .liturgical-sunday-item .sunday-details {
                     padding-right: 20px;
+                    flex-grow: 1; /* Detail zabere co nejvíc místa */
                 }
                 .liturgical-sunday-item .sunday-details .sunday-season {
                     font-weight: bold;
@@ -43,7 +43,16 @@ get_header(); // Načte hlavičku webu
                     font-size: 1.1rem;
                     display: inline;
                 }
-                /* Na desktopu je mobilní verze textu tlačítka skrytá */
+                
+                /* === ZMĚNA ZDE: Kontejner pro tlačítka === */
+                .liturgical-sunday-item .sunday-action {
+                    display: flex;
+                    flex-direction: column; /* Tlačítka budou vždy pod sebou */
+                    gap: 8px;              /* Mezera mezi tlačítky */
+                    flex-shrink: 0;        /* Zabrání smrštění kontejneru */
+                    align-items: flex-end;   /* Zarovnání tlačítek doprava */
+                }
+                
                 .liturgical-sunday-item .button .button-text-mobile {
                     display: none;
                 }
@@ -60,23 +69,27 @@ get_header(); // Načte hlavičku webu
                         margin-bottom: 12px;
                         padding-right: 0;
                     }
-                    /* Na mobilu skryjeme název liturgického období */
                     .liturgical-sunday-item .sunday-details .sunday-season {
                         display: none;
                     }
                     .liturgical-sunday-item .sunday-details .sunday-name {
-                        display: block; /* Název bude sám na řádku */
+                        display: block;
                     }
+                    
+                    /* === ZMĚNA ZDE: Kontejner tlačítek na mobilu === */
+                    .liturgical-sunday-item .sunday-action {
+                        align-items: stretch; /* Tlačítka se roztáhnou na 100% */
+                    }
+
                     .liturgical-sunday-item .sunday-action .button,
                     .liturgical-sunday-item .sunday-action button[disabled] {
                         width: 100%;
                         box-sizing: border-box;
+                        text-align: center;
                     }
-                    /* Skryjeme plný text tlačítka */
                     .liturgical-sunday-item .button .button-text-full {
                         display: none;
                     }
-                    /* A zobrazíme jen citaci v tlačítku */
                     .liturgical-sunday-item .button .button-text-mobile {
                         display: inline;
                     }
@@ -84,7 +97,7 @@ get_header(); // Načte hlavičku webu
             </style>
 
             <?php
-            // --- POMOCNÉ FUNKCE PRO VÝPOČET ---
+            // --- POMOCNÉ FUNKCE ---
 
             if (!function_exists('knihaslova_get_liturgical_cycle')) {
                 function knihaslova_get_liturgical_cycle($date) {
@@ -114,7 +127,7 @@ get_header(); // Načte hlavičku webu
                 }
             }
 
-            // --- HLAVNÍ LOGIKA ZOBRAZENÍ ---
+            // --- HLAVNÍ LOGIKA ---
 
             $all_sundays = get_option('knihaslova_liturgical_year_data');
             $all_stories_data = get_option('knihaslova_all_stories_data');
@@ -137,52 +150,53 @@ get_header(); // Načte hlavičku webu
                         continue;
                     }
 
-                    // Reset a příprava proměnných pro každou iteraci
-                    $story_id = '';
-                    $evangelist_key = '';
+                    // === ZMĚNA ZDE: Najdeme VŠECHNY příběhy, ne jen první ===
+                    $stories_for_sunday = [];
+                    $evangelist_map = [
+                        'ID_Pribehu_Mt'  => 'Matous_Citace',
+                        'ID_Pribehu_Mk'  => 'Marek_Citace',
+                        'ID_Pribehu_Lk'  => 'Lukas_Citace',
+                        'ID_Pribehu_Jan' => 'Jan_Citace',
+                    ];
 
-                    // Zjištění ID příběhu a klíče pro citaci
-                    if (!empty($sunday['ID_Pribehu_Mt']))      { $story_id = $sunday['ID_Pribehu_Mt']; $evangelist_key = 'Matous_Citace'; }
-                    elseif (!empty($sunday['ID_Pribehu_Mk']))  { $story_id = $sunday['ID_Pribehu_Mk']; $evangelist_key = 'Marek_Citace'; }
-                    elseif (!empty($sunday['ID_Pribehu_Lk']))  { $story_id = $sunday['ID_Pribehu_Lk']; $evangelist_key = 'Lukas_Citace'; }
-                    elseif (!empty($sunday['ID_Pribehu_Jan'])) { $story_id = $sunday['ID_Pribehu_Jan']; $evangelist_key = 'Jan_Citace'; }
-                    
-                    $has_story = !empty($story_id) && isset($all_stories_data[$story_id]);
-                    
-                    // Příprava textů a URL
-                    $citation = '';
-                    $full_button_text = 'Příběh se připravuje';
-                    $story_url = '#';
-
-                    if ($has_story) {
-                        $story_info = $all_stories_data[$story_id]['info'];
-                        $story_name = $story_info['Nazev_Pribehu'] ?? '';
-                        $citation   = $story_info[$evangelist_key] ?? '';
-                        $story_url  = home_url('/evangelijni-pribeh/' . $story_id);
-
-                        if ($citation && $story_name) {
-                            $full_button_text = $citation . ' (' . $story_name . ')';
-                        } elseif ($story_name) {
-                            $full_button_text = $story_name;
-                        } else {
-                            $full_button_text = 'Přejít na příběh';
+                    // Projdeme všechny možné sloupce pro ID příběhů
+                    foreach ($evangelist_map as $id_key => $citation_key) {
+                        if (!empty($sunday[$id_key]) && isset($all_stories_data[$sunday[$id_key]])) {
+                            $stories_for_sunday[] = [
+                                'id'             => $sunday[$id_key],
+                                'citation_key'   => $citation_key,
+                                'story_data'     => $all_stories_data[$sunday[$id_key]]
+                            ];
                         }
                     }
+                    // === KONEC ZMĚNY ===
 
                     ?>
-                    <div class="liturgical-sunday-item <?php echo $has_story ? 'has-story' : 'no-story'; ?>">
+                    <div class="liturgical-sunday-item <?php echo !empty($stories_for_sunday) ? 'has-story' : 'no-story'; ?>">
                         <div class="sunday-details">
                             <span class="sunday-season"><?php echo esc_html($sunday['Obdobi']); ?></span>
                             <h3 class="sunday-name"><?php echo esc_html($sunday['Nazev_Nedele']); ?></h3>
                         </div>
                         <div class="sunday-action">
-                            <?php if ($has_story): ?>
-                                <a href="<?php echo esc_url($story_url); ?>" class="button button-primary">
-                                    <span class="button-text-full"><?php echo esc_html($full_button_text); ?></span>
-                                    <span class="button-text-mobile"><?php echo esc_html($citation); ?></span>
-                                </a>
+                            <?php if (!empty($stories_for_sunday)): ?>
+                                <?php foreach ($stories_for_sunday as $story_item): // Projdeme všechny nalezené příběhy ?>
+                                    <?php
+                                        // Příprava dat pro konkrétní tlačítko
+                                        $story_id       = $story_item['id'];
+                                        $story_info     = $story_item['story_data']['info'];
+                                        $story_name     = $story_info['Nazev_Pribehu'] ?? '';
+                                        $citation       = $story_info[$story_item['citation_key']] ?? '';
+                                        $story_url      = home_url('/evangelijni-pribeh/' . $story_id);
+                                        
+                                        $full_button_text = ($citation && $story_name) ? "$citation ($story_name)" : ($story_name ?: 'Přejít na příběh');
+                                    ?>
+                                    <a href="<?php echo esc_url($story_url); ?>" class="button button-primary">
+                                        <span class="button-text-full"><?php echo esc_html($full_button_text); ?></span>
+                                        <span class="button-text-mobile"><?php echo esc_html($citation); ?></span>
+                                    </a>
+                                <?php endforeach; ?>
                             <?php else: ?>
-                                <button class="button" disabled><?php echo esc_html($full_button_text); ?></button>
+                                <button class="button" disabled>Příběh se připravuje</button>
                             <?php endif; ?>
                         </div>
                     </div>

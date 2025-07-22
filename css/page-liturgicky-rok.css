@@ -1,12 +1,12 @@
 /* =================================================================== */
-/* Styly pro stránku "Liturgický rok"                      */
+/* Styly pro stránku "Liturgický rok"                                  */
 /* =================================================================== */
 
 /* --- Obecný kontejner pro seznam --- */
 .liturgical-year-list {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px 0; /* Upraveno pro lepší zarovnání */
+    padding: 20px 0;
 }
 
 /* --- Styly pro řádek neděle (Desktop) --- */
@@ -54,10 +54,14 @@
     color: #212529;
 }
 
-/* Pravá část s tlačítkem */
+/* === ZMĚNA ZDE: Pravá část s tlačítky === */
 .sunday-action {
-    flex-shrink: 0; /* Zabrání smrštění tlačítka */
-    margin-left: 20px; /* Odsazení na desktopu */
+    display: flex;
+    flex-direction: column;   /* Tlačítka budou vždy pod sebou */
+    gap: 8px;                /* Mezera mezi tlačítky, pokud je jich víc */
+    align-items: flex-end;     /* Zarovnání tlačítek doprava */
+    flex-shrink: 0;
+    margin-left: 20px;
 }
 
 /* Skrytí mobilního textu v tlačítku na desktopu */
@@ -67,7 +71,7 @@
 
 
 /* =================================================================== */
-/* Responzivní úpravy pro mobilní zařízení                 */
+/* Responzivní úpravy pro mobilní zařízení                             */
 /* =================================================================== */
 
 @media (max-width: 768px) {
@@ -93,7 +97,8 @@
 
     /* Kontejner tlačítka */
     .sunday-action {
-        margin-left: 0; /* ZRUŠENÍ nežádoucího odsazení na mobilu */
+        margin-left: 0;       /* Zrušení odsazení na mobilu */
+        align-items: stretch; /* Tlačítka se roztáhnou na celou šířku */
     }
 
     /* Tlačítko se roztáhne na celou šířku a vycentruje text */
