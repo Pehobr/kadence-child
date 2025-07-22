@@ -15,6 +15,7 @@ get_header(); // Načte hlavičku webu
 
             <?php
             // --- STYLY PRO STRÁNKU ---
+            // Tyto styly obsahují všechny potřebné úpravy pro zobrazení více tlačítek.
             ?>
             <style>
                 /* Základní styly pro desktop */
@@ -44,7 +45,7 @@ get_header(); // Načte hlavičku webu
                     display: inline;
                 }
                 
-                /* === ZMĚNA ZDE: Kontejner pro tlačítka === */
+                /* Kontejner pro tlačítka */
                 .liturgical-sunday-item .sunday-action {
                     display: flex;
                     flex-direction: column; /* Tlačítka budou vždy pod sebou */
@@ -76,9 +77,10 @@ get_header(); // Načte hlavičku webu
                         display: block;
                     }
                     
-                    /* === ZMĚNA ZDE: Kontejner tlačítek na mobilu === */
+                    /* Kontejner tlačítek na mobilu */
                     .liturgical-sunday-item .sunday-action {
                         align-items: stretch; /* Tlačítka se roztáhnou na 100% */
+                        margin-left: 0;
                     }
 
                     .liturgical-sunday-item .sunday-action .button,
@@ -115,15 +117,21 @@ get_header(); // Načte hlavičku webu
             }
 
             if (!function_exists('knihaslova_find_current_sunday_index')) {
-                function knihaslova_find_current_sunday_index($liturgical_data, $current_cycle) {
-                    $today_id = 'mezidobi-17'; // Prozatím statická hodnota pro testování
-                    foreach ($liturgical_data as $index => $row) {
-                        $cycle_match = ($row['Cyklus'] === $current_cycle || $row['Cyklus'] === 'ABC');
-                        if ($row['ID_Nedele'] === $today_id && $cycle_match) {
-                            return $index;
+                function knihaslova_find_current_sunday_index($liturgical_data) {
+                    // Tato funkce je připravena pro dynamické hledání podle data.
+                    // Aby fungovala, musí v tabulce existovat sloupec 'Datum' (formát DD.MM.RRRR)
+                    $today_utc = new DateTime('now', new DateTimeZone('UTC'));
+                    $found_index = 0; // Fallback na začátek
+                    foreach($liturgical_data as $index => $row) {
+                        if (empty($row['Datum'])) continue;
+                        $sunday_date = DateTime::createFromFormat('d.m.Y', $row['Datum'], new DateTimeZone('UTC'));
+                        if ($sunday_date && $sunday_date >= $today_utc) {
+                           $found_index = $index;
+                           break; // Nalezli jsme první budoucí nebo aktuální neděli
                         }
                     }
-                    return 0;
+                    // Pokud je nalezena budoucí neděle, vraťme se o 1 zpět, aby byla aktuální nahoře.
+                    return ($found_index > 0) ? $found_index - 1 : 0;
                 }
             }
 
@@ -137,7 +145,10 @@ get_header(); // Načte hlavičku webu
             } else {
                 $today = new DateTime();
                 $current_cycle = knihaslova_get_liturgical_cycle($today);
-                $current_index = knihaslova_find_current_sunday_index($all_sundays, $current_cycle);
+                
+                // Použije novou dynamickou funkci pro nalezení indexu
+                $current_index = knihaslova_find_current_sunday_index($all_sundays);
+                
                 $upcoming_sundays = array_slice($all_sundays, $current_index, 15);
 
                 the_title('<h1 class="entry-title">', '</h1>');
@@ -150,7 +161,7 @@ get_header(); // Načte hlavičku webu
                         continue;
                     }
 
-                    // === ZMĚNA ZDE: Najdeme VŠECHNY příběhy, ne jen první ===
+                    // Najdeme VŠECHNY příběhy pro danou neděli
                     $stories_for_sunday = [];
                     $evangelist_map = [
                         'ID_Pribehu_Mt'  => 'Matous_Citace',
@@ -159,17 +170,22 @@ get_header(); // Načte hlavičku webu
                         'ID_Pribehu_Jan' => 'Jan_Citace',
                     ];
 
-                    // Projdeme všechny možné sloupce pro ID příběhů
                     foreach ($evangelist_map as $id_key => $citation_key) {
-                        if (!empty($sunday[$id_key]) && isset($all_stories_data[$sunday[$id_key]])) {
-                            $stories_for_sunday[] = [
-                                'id'             => $sunday[$id_key],
-                                'citation_key'   => $citation_key,
-                                'story_data'     => $all_stories_data[$sunday[$id_key]]
-                            ];
+                        if (!empty($sunday[$id_key])) {
+                            // Zpracování více ID oddělených čárkou v jednom poli
+                            $story_ids = explode(',', $sunday[$id_key]);
+                            foreach ($story_ids as $single_story_id) {
+                                $single_story_id = trim($single_story_id);
+                                if (isset($all_stories_data[$single_story_id])) {
+                                    $stories_for_sunday[] = [
+                                        'id'           => $single_story_id,
+                                        'citation_key' => $citation_key,
+                                        'story_data'   => $all_stories_data[$single_story_id]
+                                    ];
+                                }
+                            }
                         }
                     }
-                    // === KONEC ZMĚNY ===
 
                     ?>
                     <div class="liturgical-sunday-item <?php echo !empty($stories_for_sunday) ? 'has-story' : 'no-story'; ?>">
@@ -179,9 +195,9 @@ get_header(); // Načte hlavičku webu
                         </div>
                         <div class="sunday-action">
                             <?php if (!empty($stories_for_sunday)): ?>
-                                <?php foreach ($stories_for_sunday as $story_item): // Projdeme všechny nalezené příběhy ?>
+                                <?php foreach ($stories_for_sunday as $story_item): ?>
                                     <?php
-                                        // Příprava dat pro konkrétní tlačítko
+                                        // Příprava dat pro každé jednotlivé tlačítko
                                         $story_id       = $story_item['id'];
                                         $story_info     = $story_item['story_data']['info'];
                                         $story_name     = $story_info['Nazev_Pribehu'] ?? '';
@@ -189,10 +205,14 @@ get_header(); // Načte hlavičku webu
                                         $story_url      = home_url('/evangelijni-pribeh/' . $story_id);
                                         
                                         $full_button_text = ($citation && $story_name) ? "$citation ($story_name)" : ($story_name ?: 'Přejít na příběh');
+                                        
+                                        // ### ZDE JE KLÍČOVÁ OPRAVA PRO MOBIL ###
+                                        // Pokud citace neexistuje, použijeme název příběhu, aby tlačítko nebylo prázdné.
+                                        $mobile_button_text = !empty($citation) ? $citation : $story_name;
                                     ?>
                                     <a href="<?php echo esc_url($story_url); ?>" class="button button-primary">
                                         <span class="button-text-full"><?php echo esc_html($full_button_text); ?></span>
-                                        <span class="button-text-mobile"><?php echo esc_html($citation); ?></span>
+                                        <span class="button-text-mobile"><?php echo esc_html($mobile_button_text); ?></span>
                                     </a>
                                 <?php endforeach; ?>
                             <?php else: ?>
