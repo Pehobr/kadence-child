@@ -44,7 +44,7 @@ do_action( 'kadence_after_content' );
     <a href="<?php echo esc_url( site_url( '/vyhledavani-citaci/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-search" aria-hidden="true"></i></a>
 
     <?php // Ikona 3: Odkaz na domovskou stránku ?>
-    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="mobile-nav-icon mobile-nav-icon-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( site_url( '/liturgicky-rok/' ) ); ?>" class="mobile-nav-icon mobile-nav-icon-home"><i class="fa fa-home" aria-hidden="true"></i></a>
 
     <?php // Ikona 4: Odkaz na archiv příběhů (katalog) ?>
     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'katalog' ) ) ); ?>" class="mobile-nav-icon"><i class="fa fa-list" aria-hidden="true"></i></a>
