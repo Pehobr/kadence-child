@@ -31,6 +31,18 @@ function child_theme_configurator_css() {
         wp_enqueue_style( 'kniha-slova-vyhledavani-citaci-styles', get_stylesheet_directory_uri() . '/css/vyhledavani-citaci.css', array('chld_thm_cfg_child'), '1.0.0' );
     }
 
+    // --- SPRÁVNĚ VLOŽENÝ KÓD ZDE ---
+    // Načte styly specifické pro šablonu liturgického roku
+    if (is_page_template('page-liturgicky-rok.php')) {
+        wp_enqueue_style(
+            'knihaslova-liturgicky-rok-style', 
+            get_stylesheet_directory_uri() . '/css/page-liturgicky-rok.css',
+            array('chld_thm_cfg_child'), // Přidána závislost na hlavním stylu
+            filemtime(get_stylesheet_directory() . '/css/page-liturgicky-rok.css')
+        );
+    }
+    // --- KONEC VLOŽENÉHO KÓDU ---
+
     // Správné načtení knihovny ikon Font Awesome
     wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', array(), '4.7.0' );
 }

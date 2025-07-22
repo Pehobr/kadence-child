@@ -60,3 +60,62 @@ Updated: 2025-07-16 07:01:17
     flex-direction: column;
     transition: transform .3s cubic-bezier(.77,.2,.05,1), opacity .25s cubic-bezier(.77,.2,.05,1);
 }
+
+/*
+ * Zarovnání hlavičky na stránce Liturgického roku
+ */
+
+/* Cílíme na hlavní nadpis (H1) na stránce s naší šablonou */
+.page-template-page-liturgicky-rok-php .entry-title {
+    text-align: center; /* Zarovná text na střed */
+    margin-top: 1.2em;    /* PŘIDÁNO: Vytvoří mezeru nad nadpisem */
+    margin-bottom: 0.5em; /* Vytvoří malou mezeru pod nadpisem */
+}
+
+/* Cílíme na podnadpis s informací o cyklu */
+.liturgical-cycle-info {
+    text-align: center; /* Zarovná text na střed */
+    font-size: 1.1em;   /* Můžeme text trochu zvětšit pro lepší viditelnost */
+    margin-bottom: 1.5em; /* Vytvoří větší mezeru nad seznamem nedělí */
+}
+
+/*
+ * Sjednocení vzhledu tlačítka "Přejít na příběh"
+ * podle ostatních tlačítek na webu
+ */
+
+.sunday-action .button.button-primary {
+    /* Základní barvy a font */
+    background: #514332;
+    color: #f5f2eb;
+    font-family: var(--global-heading-font-family, serif); /* Použije hlavní font pro nadpisy */
+    font-weight: 700;
+    font-size: 17px;
+    padding: 10px 20px;
+    
+    /* Vlastní 3D efekt podle vzoru */
+    border: 1px solid #7a6a58;
+    border-bottom-color: #2b2319;
+    border-right-color: #2b2319;
+    border-radius: 8px;
+    text-shadow: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 
+                0 4px 0 #2b2319; /* Vytvoří stín "pod" tlačítkem */
+
+    /* Chování při interakci */
+    position: relative; /* Nutné pro posouvání */
+    top: 0;
+    transition: all 0.1s ease-in-out;
+}
+
+/* Efekt při najetí myší */
+.sunday-action .button.button-primary:hover {
+    background: #615240; /* Mírné zesvětlení pozadí */
+    color: #ffffff;
+}
+
+/* Efekt při stisknutí tlačítka */
+.sunday-action .button.button-primary:active {
+    top: 3px; /* Posune tlačítko dolů */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3); /* Vytvoří dojem stisknutí */
+}

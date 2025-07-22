@@ -1,0 +1,78 @@
+.liturgical-year-list {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.liturgical-sunday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 1px solid #d8d5d1; /* Mírně upravený okraj pro lepší kontrast */
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #f5f2eb; /* ZMĚNA: Nová krémová barva pozadí */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.liturgical-sunday-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.liturgical-sunday-item.no-story {
+    background-color: #f9f9f9;
+    opacity: 0.8;
+}
+
+.sunday-details {
+    flex-grow: 1;
+}
+
+.sunday-season {
+    display: block;
+    font-size: 0.85em;
+    color: #6c757d; /* Tmavě šedá */
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.sunday-name {
+    margin: 0;
+    font-size: 1.25em;
+    font-weight: 500;
+    color: #212529; /* Tmavší černá pro lepší čitelnost */
+}
+
+.sunday-action {
+    flex-shrink: 0;
+    margin-left: 20px;
+}
+
+/* Styly pro tlačítka ponecháme tak, aby odpovídaly zbytku webu */
+/* Tyto třídy se pravděpodobně načítají z tvého hlavního CSS souboru */
+.button {
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+}
+
+.button-primary {
+    background-color: #0073aa; /* Standardní modrá WordPressu */
+    color: white;
+    border-color: #006799;
+}
+
+.button[disabled] {
+    background-color: #e9ecef; /* Světle šedá */
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #dee2e6;
+}

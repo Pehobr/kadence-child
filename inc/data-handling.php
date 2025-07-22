@@ -20,6 +20,7 @@ function get_data_from_google_sheet($sheet_url) {
     }
 
     $body = wp_remote_retrieve_body($response);
+    // Odstraní BOM (Byte Order Mark), který může způsobovat problémy na začátku souboru
     $body = preg_replace('/^\x{FEFF}|\x{EF}\x{BB}\x{BF}/', '', $body);
 
     $stream = fopen('php://memory', 'r+');
@@ -35,6 +36,7 @@ function get_data_from_google_sheet($sheet_url) {
     $data = [];
     while (($row = fgetcsv($stream)) !== false) {
         if (count($header) === count($row)) {
+            // Přidáme řádek pouze pokud není úplně prázdný
             if (count(array_filter($row)) > 0) {
                 $data[] = array_combine($header, $row);
             }
@@ -55,15 +57,12 @@ function knihaslova_get_story_data($story_id) {
         return null;
     }
 
-    // Získá všechna data z jedné WordPress volby (option)
     $all_stories = get_option('knihaslova_all_stories_data');
 
-    // Zkontroluje, zda data existují a zda obsahují klíč pro požadovaný příběh
     if (!empty($all_stories) && isset($all_stories[$story_id])) {
         return $all_stories[$story_id];
     }
 
-    // Pokud data nejsou nalezena, zapíše chybu a vrátí null
     error_log('Kniha Slova: Data pro příběh "' . $story_id . '" nebyla nalezena v uložených datech. Spusťte prosím manuální aktualizaci v administraci.');
     return null;
 }
@@ -71,19 +70,42 @@ function knihaslova_get_story_data($story_id) {
 /**
  * Manuálně spustí proces načtení všech dat z Google Sheets a uloží je do databáze.
  * Tuto funkci volá tlačítko v administraci.
- * @return bool True v případě úspěchu, false při selhání.
  */
 function knihaslova_manual_data_update() {
+    echo '<div class="notice notice-info"><p>Zahajuji aktualizaci dat z Google Sheets...</p></div>';
+
+    // 1. DEFINICE VŠECH ZDROJOVÝCH URL
+    // ===================================
     $urls = [
-        'pribehy'      => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=0&single=true&output=csv',
-        'katolicky'    => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=581207951&single=true&output=csv',
-        'ekumenicky'   => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1989356485&single=true&output=csv',
-        'jeruzalemsky' => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=493482207&single=true&output=csv',
+        'pribehy'        => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=0&single=true&output=csv',
+        'katolicky'      => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=581207951&single=true&output=csv',
+        'ekumenicky'     => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1989356485&single=true&output=csv',
+        'jeruzalemsky'   => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=493482207&single=true&output=csv',
+        'liturgicky_rok' => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1699666248&single=true&output=csv' // <-- PONECH ZDE SVOJI URL
     ];
+
+    // 2. NAČTENÍ DAT PRO LITURGICKÝ ROK
+    // ===================================
+    if (empty($urls['liturgicky_rok']) || strpos($urls['liturgicky_rok'], 'TVOJE_') === 0) {
+        echo '<div class="notice notice-warning"><p><strong>Liturgický rok:</strong> Není zadána platná CSV adresa. Tento krok byl přeskočen.</p></div>';
+    } else {
+        $liturgicky_rok_data = get_data_from_google_sheet($urls['liturgicky_rok']);
+        if ($liturgicky_rok_data !== false) {
+            update_option('knihaslova_liturgical_year_data', $liturgicky_rok_data);
+            echo '<div class="notice notice-success"><p><strong>Liturgický rok:</strong> Data byla úspěšně načtena a uložena. Počet záznamů: ' . count($liturgicky_rok_data) . '</p></div>';
+        } else {
+            echo '<div class="notice notice-error"><p><strong>Liturgický rok:</strong> Chyba při načítání dat. Zkontrolujte CSV adresu a publikování listu.</p></div>';
+        }
+    }
+
+    // 3. ZPRACOVÁNÍ DAT PRO PŘÍBĚHY
+    // ===============================================
+    echo '<div class="notice notice-info"><p>Zpracovávám data příběhů a překladů...</p></div>';
 
     $pribehy_data = get_data_from_google_sheet($urls['pribehy']);
     if (!$pribehy_data) {
-        return false; // Selhalo načtení hlavního seznamu příběhů
+        echo '<div class="notice notice-error"><p><strong>Příběhy:</strong> Kritická chyba! Nepodařilo se načíst hlavní seznam příběhů. Zpracování bylo ukončeno.</p></div>';
+        return false; // Ukončíme funkci s chybou
     }
 
     $katolicky_data = get_data_from_google_sheet($urls['katolicky']);
@@ -91,7 +113,6 @@ function knihaslova_manual_data_update() {
     $jeruzalemsky_data = get_data_from_google_sheet($urls['jeruzalemsky']);
 
     $all_stories_data = [];
-
     $find_row = function($data, $id) {
         if (!$data) return null;
         foreach ($data as $row) {
@@ -104,10 +125,7 @@ function knihaslova_manual_data_update() {
 
     foreach ($pribehy_data as $story_info) {
         $story_id = trim($story_info['ID_pribehu']);
-        if (empty($story_id)) {
-            continue;
-        }
-
+        if (empty($story_id)) continue;
         $all_stories_data[$story_id] = [
             'info' => $story_info,
             'translations' => [
@@ -118,11 +136,20 @@ function knihaslova_manual_data_update() {
         ];
     }
 
-    // Uloží kompletní data do jedné volby (option) v databázi WordPressu.
-    // Přepíše stávající data.
-    update_option('knihaslova_all_stories_data', $all_stories_data);
+    // Získáme stará data pro porovnání
+    $old_stories_data = get_option('knihaslova_all_stories_data');
+
+    // Porovnáme stará a nová data. Pokud jsou stejná, nic neukládáme.
+    if ($old_stories_data == $all_stories_data) {
+        echo '<div class="notice notice-info"><p><strong>Příběhy a překlady:</strong> Data jsou aktuální, nebylo potřeba nic ukládat. Počet příběhů: ' . count($all_stories_data) . '</p></div>';
+    } else {
+        // Pokud jsou data jiná, uložíme je.
+        update_option('knihaslova_all_stories_data', $all_stories_data);
+        echo '<div class="notice notice-success"><p><strong>Příběhy a překlady:</strong> Nová data byla úspěšně zpracována a uložena. Počet příběhů: ' . count($all_stories_data) . '</p></div>';
+    }
     
-    return true; // Úspěch
+    // Vrátíme TRUE, aby skript v administraci věděl, že vše proběhlo v pořádku.
+    return true; 
 }
 
 /**
