@@ -9,7 +9,8 @@ get_header(); ?>
     <div class="content-container site-container">
         <main id="main" class="site-main">
             <header class="page-header">
-<h1 class="page-title" style="text-align: center;"><?php the_title(); ?></h1>            </header>
+                <h1 class="page-title" style="text-align: center;"><?php the_title(); ?></h1>
+            </header>
 
             <div class="view-switcher">
                 <button class="nav-tab active" data-target="name-view">Podle názvů</button>
@@ -42,7 +43,6 @@ get_header(); ?>
                     <?php
                     $evangeliste_slugs = array('matous', 'marek', 'lukas', 'jan');
                     
-                    // Pole pro správné zobrazení jmen s diakritikou
                     $display_names = [
                         'matous' => 'Matouš',
                         'marek'  => 'Marek',
@@ -50,7 +50,6 @@ get_header(); ?>
                         'jan'    => 'Jan'
                     ];
 
-                    // Pole pro zobrazení zkratek
                     $short_names = [
                         'matous' => 'Mt',
                         'marek'  => 'Mk',
@@ -61,8 +60,8 @@ get_header(); ?>
                     foreach ($evangeliste_slugs as $index => $slug) {
                         $active_class = ($index === 0) ? 'active' : '';
                         echo '<button class="nav-tab ' . $active_class . '" data-evangelist="' . $slug . '">
-                                <span class="fullname">' . $display_names[$slug] . '</span>
-                                <span class="shortname">' . $short_names[$slug] . '</span>
+                                <span class="fullname">' . esc_html($display_names[$slug]) . '</span>
+                                <span class="shortname">' . esc_html($short_names[$slug]) . '</span>
                               </button>';
                     }
                     ?>
@@ -74,24 +73,53 @@ get_header(); ?>
                         $active_class = ($index === 0) ? 'active' : '';
                         echo '<div id="evangelist-' . $slug . '" class="evangelist-citation-content ' . $active_class . '">';
                         echo '<div class="katalog-grid">';
+
+                        // 1. Načteme všechny příběhy, které mají citaci pro daného evangelistu
                         $args = array(
-                            'post_type' => 'evangelijni_pribeh',
+                            'post_type'      => 'evangelijni_pribeh',
                             'posts_per_page' => -1,
-                            'meta_key' => $slug . '_citace',
-                            'orderby' => 'meta_value',
-                            'order' => 'ASC',
+                            'meta_query'     => array(
+                                array(
+                                    'key'     => $slug . '_citace',
+                                    'value'   => '',
+                                    'compare' => '!=',
+                                ),
+                            ),
                         );
-                        $pribehy = new WP_Query($args);
-                        if ($pribehy->have_posts()) {
-                            while ($pribehy->have_posts()) {
-                                $pribehy->the_post();
-                                $citace = get_post_meta(get_the_ID(), $slug . '_citace', true);
-                                if ($citace) {
-                                    echo '<a href="' . get_permalink() . '" class="katalog-button">' . $citace . '</a>';
+                        $pribehy_query = new WP_Query($args);
+
+                        // 2. Vložíme je do pole, které následně seřadíme
+                        $stories_to_sort = [];
+                        if ($pribehy_query->have_posts()) {
+                            while ($pribehy_query->have_posts()) {
+                                $pribehy_query->the_post();
+                                $citation = get_post_meta(get_the_ID(), $slug . '_citace', true);
+                                if (!empty($citation)) {
+                                    $stories_to_sort[] = [
+                                        'permalink' => get_permalink(),
+                                        'citation'  => $citation,
+                                    ];
                                 }
                             }
                         }
                         wp_reset_postdata();
+
+                        // 3. Seřadíme pole pomocí naší pomocné funkce
+                        if (!empty($stories_to_sort) && function_exists('knihaslova_get_citation_sort_key')) {
+                            usort($stories_to_sort, function($a, $b) {
+                                $sort_a = knihaslova_get_citation_sort_key($a['citation']);
+                                $sort_b = knihaslova_get_citation_sort_key($b['citation']);
+                                return $sort_a <=> $sort_b;
+                            });
+                        }
+
+                        // 4. Zobrazíme správně seřazená tlačítka
+                        if (!empty($stories_to_sort)) {
+                            foreach ($stories_to_sort as $story) {
+                                echo '<a href="' . esc_url($story['permalink']) . '" class="katalog-button">' . esc_html($story['citation']) . '</a>';
+                            }
+                        }
+                        
                         echo '</div></div>';
                     }
                     ?>
@@ -101,5 +129,8 @@ get_header(); ?>
         
         <?php get_sidebar(); ?>
 
-    </div></div><?php
+    </div>
+</div>
+
+<?php
 get_footer();
