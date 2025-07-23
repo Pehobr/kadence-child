@@ -159,3 +159,16 @@
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
+
+/* Sjednocení stylu pro všechny textové inputy ve formuláři */
+.password-form input[type="password"],
+.password-form input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #7a6a58;
+    border-radius: 5px;
+    background-color: #f5f2eb;
+    color: #3e2f1c;
+    font-size: 16px;
+    box-sizing: border-box;
+}

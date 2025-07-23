@@ -3,42 +3,46 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 //======================================================================
-// 5. VÝVOJÁŘSKÁ SEKCE PRO SPRÁVU WEBU
+// 5. VÝVOJÁŘSKÁ SEKCE PRO SPRÁVU WEBU (přejmenováno na "Farář")
 //======================================================================
 
 /**
- * Přidá do administrace novou položku hlavního menu "Admin".
+ * Přidá do administrace novou hlavní položku menu "Farář" a její podpoložky.
  */
 function knihaslova_add_admin_menu() {
+    // Hlavní položka menu "Farář"
     add_menu_page(
-        'Admin Nastavení',
-        'Admin',
-        'manage_options',
-        'kniha_slova_admin',
-        'knihaslova_admin_page_html',
-        'dashicons-admin-generic',
-        2
+        'Farář - Nástroje',         // Titulek stránky v prohlížeči
+        'Farář',                    // Název v menu
+        'manage_options',           // Požadovaná oprávnění
+        'knihaslova_farar',         // Slug (unikátní identifikátor) menu
+        'knihaslova_farar_main_page_html', // Funkce pro vykreslení obsahu hlavní stránky
+        'dashicons-admin-users',    // Ikona (ikona pro uživatele)
+        3                           // Pozice v menu
+    );
+
+    // Podpoložka menu "Hesla farností"
+    add_submenu_page(
+        'knihaslova_farar',         // Rodičovský slug (menu "Farář")
+        'Hesla farností',           // Titulek stránky v prohlížeči
+        'Hesla farností',           // Název v menu
+        'manage_options',           // Požadovaná oprávnění
+        'knihaslova_hesla',         // Slug této podstránky
+        'knihaslova_hesla_page_html' // Funkce pro vykreslení obsahu stránky s hesly
     );
 }
 add_action('admin_menu', 'knihaslova_add_admin_menu');
 
 /**
- * Vykreslí obsah stránky "Admin".
+ * Vykreslí obsah hlavní stránky "Farář" (pro manuální aktualizaci).
  */
-function knihaslova_admin_page_html() {
+function knihaslova_farar_main_page_html() {
     if (!current_user_can('manage_options')) {
         return;
     }
 
-    // Zkontroluje, zda bylo stisknuto tlačítko pro manuální aktualizaci
-    if (isset($_POST['knihaslova_manual_update_submit'])) {
-        // Bezpečnostní kontrola (nonce)
-        check_admin_referer('knihaslova_manual_update_nonce');
-
-        // Zavolá funkci pro aktualizaci dat
+    if (isset($_POST['knihaslova_manual_update_submit']) && check_admin_referer('knihaslova_manual_update_nonce')) {
         $success = knihaslova_manual_data_update();
-
-        // Zobrazí zprávu o výsledku
         if ($success) {
             echo '<div class="notice notice-success is-dismissible"><p>Data z Google Sheets byla úspěšně načtena a uložena.</p></div>';
         } else {
@@ -48,15 +52,8 @@ function knihaslova_admin_page_html() {
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <p>Nástroje pro správu obsahu webu Kniha Slova.</p>
         
-        <form action="options.php" method="post">
-            <?php
-            settings_fields('knihaslova_admin_settings');
-            do_settings_sections('kniha_slova_admin');
-            submit_button('Uložit nastavení');
-            ?>
-        </form>
-
         <hr> 
 
         <form method="post" action="">
@@ -64,7 +61,6 @@ function knihaslova_admin_page_html() {
             <p>Kliknutím na tlačítko níže smažete stávající uložená data a nahrajete nová, aktuální data z Google Sheets. Tento proces může trvat několik sekund.</p>
             <p><strong>Použijte toto tlačítko vždy, když přidáte nebo upravíte příběh v Google tabulce.</strong></p>
             <?php
-            // Přidání bezpečnostního klíče (nonce)
             wp_nonce_field('knihaslova_manual_update_nonce');
             ?>
             <input type="submit" name="knihaslova_manual_update_submit" id="knihaslova_manual_update_submit" class="button button-primary" value="Načíst a uložit data z Google Sheets">
@@ -74,40 +70,64 @@ function knihaslova_admin_page_html() {
 }
 
 /**
- * Registruje nastavení, sekce a pole pro admin stránku.
+ * Vykreslí obsah stránky pro správu hesel farností.
+ */
+function knihaslova_hesla_page_html() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields('knihaslova_hesla_settings');
+            do_settings_sections('knihaslova_hesla');
+            submit_button('Uložit hesla');
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+/**
+ * Registruje nastavení, sekce a pole pro stránku s hesly.
  */
 function knihaslova_settings_init() {
-    // Sekce pro vývojáře byla odebrána, protože již není potřeba
-    
-    // Sekce pro hesla
-    register_setting('knihaslova_admin_settings', 'knihaslova_passwords');
+    register_setting('knihaslova_hesla_settings', 'knihaslova_priest_credentials');
+
     add_settings_section(
-        'knihaslova_passwords_section',
-        'Přístupová hesla',
-        'knihaslova_passwords_section_cb',
-        'kniha_slova_admin'
+        'knihaslova_hesla_section',
+        'Správa přístupových údajů',
+        'knihaslova_hesla_section_cb',
+        'knihaslova_hesla'
     );
+
     add_settings_field(
-        'access_passwords_field',
-        'Hesla pro přístup',
-        'knihaslova_access_passwords_field_cb',
-        'kniha_slova_admin',
-        'knihaslova_passwords_section'
+        'priest_credentials_field',
+        'Přihlašovací údaje',
+        'knihaslova_priest_credentials_field_cb',
+        'knihaslova_hesla',
+        'knihaslova_hesla_section'
     );
 }
 add_action('admin_init', 'knihaslova_settings_init');
 
-// Callbacky pro sekci hesel
-function knihaslova_passwords_section_cb($args) {
-    echo '<p id="' . esc_attr($args['id']) . '">Zde můžete spravovat hesla, která odemknou neveřejný obsah na webu.</p>';
+function knihaslova_hesla_section_cb($args) {
+    echo '<p id="' . esc_attr($args['id']) . '">Zde spravujete přihlašovací údaje (e-mail a heslo), které odemknou neveřejný obsah na webu.</p>';
 }
 
-function knihaslova_access_passwords_field_cb() {
-    $passwords = get_option('knihaslova_passwords', '');
+/**
+ * Callback pro vykreslení pole s přihlašovacími údaji.
+ */
+function knihaslova_priest_credentials_field_cb() {
+    $credentials = get_option('knihaslova_priest_credentials', '');
     ?>
-    <input type="text" name="knihaslova_passwords" id="access_passwords_field" value="<?php echo esc_attr($passwords); ?>" class="large-text">
+    <textarea name="knihaslova_priest_credentials" id="priest_credentials_field" class="large-text" rows="10"><?php echo esc_textarea($credentials); ?></textarea>
     <p class="description">
-        Zadejte jedno nebo více hesel oddělených čárkou (např. heslo1,heslo2,dalsiheslo).
+        Zadejte přihlašovací údaje ve formátu: <strong>e-mail,heslo</strong>. Jednotlivé páry oddělte středníkem (<strong>;</strong>).
+        <br>
+        Příklad: <strong>farni.email@domena.cz,Heslo123;dalsi.email@farnost.cz,DalsiHeslo456</strong>
     </p>
     <?php
 }
