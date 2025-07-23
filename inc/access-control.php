@@ -98,7 +98,7 @@ function knihaslova_display_password_form() {
     <div class="password-form-container">
         <div class="password-form-wrapper">
             <h2><i class="fa fa-lock" aria-hidden="true"></i> Obsah pro kněze</h2>
-            <p>Pro odemčení neveřejných záložek na stránkách příběhů zadejte prosím Váš farní e-mail a přístupové heslo.</p>
+            <p>Pro odemčení neveřejných záložek na stránkách příběhů zadejte prosím Váš e-mail a přístupové heslo.</p>
 
             <?php
             if ( isset( $_SESSION['knihaslova_access_error'] ) ) {
@@ -113,7 +113,7 @@ function knihaslova_display_password_form() {
 
             <form method="post" action="" class="password-form">
                 <div class="form-group">
-                    <label for="access_email">Váš farní e-mail:</label>
+                    <label for="access_email">Váš e-mail:</label>
                     <input type="email" id="access_email" name="access_email" required>
                 </div>
                 <div class="form-group">
