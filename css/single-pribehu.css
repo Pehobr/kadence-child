@@ -439,3 +439,33 @@
 
 /* Kontejner pro vnořené záložky v Exegezi. */
 .exegesis-switcher {
+
+    /* === NOVÉ: Dynamické rozložení sloupců evangelistů === */
+
+/* Pokud je jen jeden evangelista, vycentrujeme ho a omezíme šířku, aby nebyl příliš roztažený. */
+.comparison-grid.evangelist-count-1 {
+    justify-content: center;
+}
+.comparison-grid.evangelist-count-1 .grid-column {
+    flex-grow: 0; /* Zabráníme růstu nad definovanou šířku */
+    flex-basis: 90%; /* Výchozí šířka na mobilu */
+    max-width: 700px; /* Maximální šířka na PC */
+}
+
+/* Pokud jsou dva evangelisté, každý zabere polovinu (s ohledem na mezeru). */
+@media (min-width: 768px) {
+    .comparison-grid.evangelist-count-2 .grid-column {
+        flex-basis: calc(50% - 10px); /* 10px je polovina z 'gap: 20px' */
+        max-width: calc(50% - 10px);
+    }
+}
+
+/* Pokud jsou tři evangelisté, každý zabere třetinu. */
+@media (min-width: 1024px) {
+    .comparison-grid.evangelist-count-3 .grid-column {
+        flex-basis: calc(33.333% - 14px); /* ~1/3 mínus část mezery */
+        max-width: calc(33.333% - 14px);
+    }
+}
+
+/* Pro čtyři a více zůstává výchozí chování flex: 1; min-width: 250px; v pořádku. */
