@@ -133,7 +133,7 @@ function knihaslova_display_success_message() {
     ?>
     <div class="password-form-container">
         <div class="password-form-wrapper">
-            <h2><i class="fa fa-check-circle" aria-hidden="true"></i> Přihlášení úspěšné</h2>
+            <h2><i class="fa fa-check-circle" aria-hidden="true"></i> Přihlášení</h2>
             
             <?php
             if ( isset( $_SESSION['knihaslova_success_message'] ) ) {
