@@ -11,33 +11,12 @@ get_header(); // Načte hlavičku webu
     <div class="content-container site-container">
         <main id="main" class="site-main" role="main">
 
-            <style>
-                /* Styly jsou převzaté z předchozí verze a plně funkční. */
-                .liturgical-sunday-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 12px; }
-                .liturgical-sunday-item .sunday-details { padding-right: 20px; flex-grow: 1; }
-                .liturgical-sunday-item .sunday-details .sunday-season { font-weight: bold; color: #6c757d; margin-right: 0.5em; font-size: 1em; }
-                .liturgical-sunday-item .sunday-details .sunday-name { margin: 0; font-size: 1.1rem; display: inline; }
-                .liturgical-sunday-item .sunday-action { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; align-items: flex-end; margin-left: 20px;}
-                .liturgical-sunday-item .button .button-text-mobile { display: none; }
-                @media (max-width: 768px) {
-                    .liturgical-sunday-item { flex-direction: column; align-items: stretch; padding: 12px; }
-                    .liturgical-sunday-item .sunday-details { text-align: center; margin-bottom: 12px; padding-right: 0; }
-                    .liturgical-sunday-item .sunday-details .sunday-season { display: none; }
-                    .liturgical-sunday-item .sunday-details .sunday-name { display: block; }
-                    .liturgical-sunday-item .sunday-action { align-items: stretch; margin-left: 0; }
-                    .liturgical-sunday-item .sunday-action .button, .liturgical-sunday-item .sunday-action button[disabled] { width: 100%; box-sizing: border-box; text-align: center; }
-                    .liturgical-sunday-item .button .button-text-full { display: none; }
-                    .liturgical-sunday-item .button .button-text-mobile { display: inline; }
-                }
-            </style>
-
             <?php
-            // --- POMOCNÉ FUNKCE ---
+            // --- POMOCNÉ FUNKCE (UPRAVENO) ---
 
             if (!function_exists('knihaslova_get_liturgical_cycle')) {
                 /**
-                 * Spočítá aktuální liturgický cyklus (A, B, nebo C).
-                 * Kód byl upraven pro správný výpočet.
+                 * Spočítá aktuální liturgický cyklus (A, B, nebo C) na základě nastavení.
                  */
                 function knihaslova_get_liturgical_cycle($date) {
                     $year = (int)$date->format('Y');
@@ -49,9 +28,8 @@ get_header(); // Načte hlavičku webu
                     // Liturgický rok začíná prvním adventem. Pokud je dnešní datum před ním, spadáme do předchozího liturgického roku.
                     $lit_year_start_number = ($date < $first_advent) ? $year : $year + 1;
                     
-                    // OPRAVA: Základní rok pro cyklus A je 2023 (začal adventem 2022).
-                    // Tato oprava zajišťuje správné určení cyklu pro všechny roky.
-                    $base_year_A = 2023; 
+                    // Použijeme rok z nastavení, s výchozí hodnotou 2023
+                    $base_year_A = get_option('knihaslova_liturgical_cycle_base_year_A', 2023); 
                     $diff = $lit_year_start_number - $base_year_A;
                     $cycle_index = $diff % 3;
                     if ($cycle_index < 0) { $cycle_index += 3; }
@@ -61,24 +39,53 @@ get_header(); // Načte hlavičku webu
                 }
             }
             
-            if (!function_exists('knihaslova_calculate_liturgical_dates')) {
+            if (!function_exists('knihaslova_calculate_liturgical_dates_with_override')) {
                 /**
-                 * Vytvoří mapu liturgických nedělí a jejich PŘIBLIŽNÝCH kalendářních dat.
-                 * UPOZORNĚNÍ: Tato funkce předpokládá, že všechny události v tabulce následují po sobě v týdenních intervalech.
-                 * To funguje pro běžné neděle, ale nezohledňuje pevné datum svátků (např. Povýšení sv. Kříže 14. září).
-                 * Pro přesné datumové určení by bylo potřeba rozšířit data v Google Sheet o konkrétní data nebo pravidla.
+                 * Vytvoří mapu liturgických nedělí a jejich dat.
+                 * Upřednostňuje manuální nastavení referenční neděle pro přesný výpočet.
                  */
-                function knihaslova_calculate_liturgical_dates($all_sundays, $cycle) {
+                function knihaslova_calculate_liturgical_dates_with_override($all_sundays, $cycle) {
+                    $ref_date_str = get_option('knihaslova_override_reference_date');
+                    $ref_sunday_id = get_option('knihaslova_override_reference_sunday_id');
+
+                    // Vyfiltrujeme neděle pro daný cyklus a také ty, které jsou pro všechny cykly (ABC).
+                    $sundays_in_cycle = array_values(array_filter($all_sundays, function($s) use ($cycle) {
+                        return isset($s['Cyklus']) && ($s['Cyklus'] === $cycle || $s['Cyklus'] === 'ABC');
+                    }));
+
+                    $date_map = [];
+
+                    // Metoda 1: Výpočet pomocí manuální reference (přesnější)
+                    if (!empty($ref_date_str) && !empty($ref_sunday_id)) {
+                        $reference_date = new DateTime($ref_date_str);
+                        $reference_index = -1;
+
+                        // Najdeme index referenční neděle v našem poli pro aktuální cyklus
+                        foreach ($sundays_in_cycle as $index => $sunday) {
+                            if ($sunday['ID_Nedele'] === $ref_sunday_id) {
+                                $reference_index = $index;
+                                break;
+                            }
+                        }
+
+                        if ($reference_index !== -1) {
+                            // Dopočítáme data pro všechny ostatní neděle relativně k referenčnímu bodu
+                            foreach ($sundays_in_cycle as $index => $sunday) {
+                                $week_diff = $index - $reference_index;
+                                $date_of_this_sunday = (clone $reference_date)->modify(($week_diff >= 0 ? '+' : '') . $week_diff . ' weeks');
+                                $date_map[$sunday['ID_Nedele']] = $date_of_this_sunday;
+                            }
+                            return $date_map;
+                        }
+                    }
+
+                    // Metoda 2: Původní výpočet od Adventu (záložní metoda)
                     $year = (int)date('Y');
-                    
-                    // Výpočet začátku aktuálního liturgického roku
                     $christmas_this_year = new DateTime("$year-12-25");
                     $day_of_week_this_year = (int)$christmas_this_year->format('w');
                     $first_advent_of_this_year = (clone $christmas_this_year)->modify('-' . $day_of_week_this_year . ' days -3 weeks');
-
                     $today = new DateTime('today');
                     
-                    // Zjistíme, kdy začal liturgický rok, ve kterém se právě nacházíme.
                     if ($today >= $first_advent_of_this_year) {
                         $start_of_lit_year_date = $first_advent_of_this_year;
                     } else {
@@ -87,24 +94,17 @@ get_header(); // Načte hlavičku webu
                         $day_of_week_last_year = (int)$christmas_last_year->format('w');
                         $start_of_lit_year_date = (clone $christmas_last_year)->modify('-' . $day_of_week_last_year . ' days -3 weeks');
                     }
-
-                    // Vyfiltrujeme neděle pro daný cyklus a také ty, které jsou pro všechny cykly (ABC).
-                    // TATO ČÁST JE KLÍČOVÁ PRO VAŠI POTŘEBU A JE FUNKČNÍ.
-                    $sundays_in_cycle = array_values(array_filter($all_sundays, function($s) use ($cycle) {
-                        return $s['Cyklus'] === $cycle || $s['Cyklus'] === 'ABC';
-                    }));
                     
-                    // Vytvoříme mapu dat - toto je zjednodušení, které nemusí odpovídat realitě pro svátky.
-                    $date_map = [];
                     foreach ($sundays_in_cycle as $index => $sunday) {
                         $date_of_this_sunday = (clone $start_of_lit_year_date)->modify("+$index weeks");
                         $date_map[$sunday['ID_Nedele']] = $date_of_this_sunday;
                     }
+                    
                     return $date_map;
                 }
             }
 
-            // --- HLAVNÍ LOGIKA ---
+            // --- HLAVNÍ LOGIKA (UPRAVENO) ---
 
             $all_sundays = get_option('knihaslova_liturgical_year_data');
             $all_stories_data = get_option('knihaslova_all_stories_data');
@@ -112,11 +112,19 @@ get_header(); // Načte hlavičku webu
             if (empty($all_sundays) || empty($all_stories_data)) {
                 echo '<p>Data liturgického roku nebo data příběhů nebyla nalezena. Spusťte prosím aktualizaci v administraci.</p>';
             } else {
+                the_post();
+                the_title('<h1 class="entry-title">', '</h1>');
+
                 $today = new DateTime('today');
                 $current_cycle = knihaslova_get_liturgical_cycle($today);
                 
-                // Vytvoříme mapu dat pro aktuální cyklus
-                $date_map = knihaslova_calculate_liturgical_dates($all_sundays, $current_cycle);
+                // Použijeme novou funkci pro výpočet dat
+                $date_map = knihaslova_calculate_liturgical_dates_with_override($all_sundays, $current_cycle);
+
+                // Seřadíme neděle podle vypočítaného data
+                uasort($date_map, function($a, $b) {
+                    return $a <=> $b;
+                });
 
                 // Najdeme ID první nadcházející neděle/svátku
                 $found_sunday_id = null;
@@ -126,11 +134,17 @@ get_header(); // Načte hlavičku webu
                         break;
                     }
                 }
-
-                // Filtrujeme si všechny neděle pro aktuální cyklus a 'ABC'
-                $sundays_for_display = array_values(array_filter($all_sundays, function($s) use ($current_cycle) {
-                    return $s['Cyklus'] === $current_cycle || $s['Cyklus'] === 'ABC';
-                }));
+                
+                // Filtrujeme a seřadíme všechny neděle pro zobrazení
+                $sundays_for_display = [];
+                foreach ($date_map as $id => $date) {
+                    foreach($all_sundays as $sunday_data) {
+                        if (isset($sunday_data['ID_Nedele']) && $sunday_data['ID_Nedele'] === $id) {
+                            $sundays_for_display[] = $sunday_data;
+                            break;
+                        }
+                    }
+                }
 
                 $current_index = 0;
                 if ($found_sunday_id) {
@@ -143,20 +157,13 @@ get_header(); // Načte hlavičku webu
                     }
                 }
                 
-                // Zobrazíme 15 následujících událostí
                 $upcoming_sundays = array_slice($sundays_for_display, $current_index, 15);
 
-                the_title('<h1 class="entry-title">', '</h1>');
                 echo '<p class="liturgical-cycle-info">Následující neděle pro liturgický cyklus: <strong>' . esc_html($current_cycle) . '</strong></p>';
                 
                 echo '<div class="liturgical-year-list">';
                 
                 foreach ($upcoming_sundays as $sunday) {
-                    // Tato kontrola je teoreticky již zbytečná, protože pole $upcoming_sundays již obsahuje správné položky, ale pro jistotu ji zde ponecháváme.
-                    if ($sunday['Cyklus'] !== $current_cycle && $sunday['Cyklus'] !== 'ABC') {
-                        continue;
-                    }
-
                     // Najdeme příběhy přiřazené k dané neděli
                     $stories_for_sunday = [];
                     $evangelist_map = [
@@ -195,7 +202,7 @@ get_header(); // Načte hlavičku webu
                                         $story_info         = $story_item['story_data']['info'];
                                         $story_name         = $story_info['Nazev_Pribehu'] ?? '';
                                         $citation           = $story_info[$story_item['citation_key']] ?? '';
-                                        $story_url          = home_url('/evangelijni-pribeh/' . $story_id);
+                                        $story_url          = home_url('/pribeh/' . $story_id);
                                         
                                         $full_button_text   = ($citation && $story_name) ? "$citation ($story_name)" : ($story_name ?: 'Přejít na příběh');
                                         $mobile_button_text = !empty($citation) ? $citation : $story_name;
@@ -218,9 +225,6 @@ get_header(); // Načte hlavičku webu
             ?>
         
         </main>
-
-        <?php get_sidebar(); ?>
-
     </div>
 </div>
 

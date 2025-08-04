@@ -30,6 +30,16 @@ function knihaslova_add_admin_menu() {
         'knihaslova_hesla',         // Slug této podstránky
         'knihaslova_hesla_page_html' // Funkce pro vykreslení obsahu stránky s hesly
     );
+
+    // --- NOVÉ: Podpoložka pro nastavení liturgického roku ---
+    add_submenu_page(
+        'knihaslova_farar',         // Rodičovský slug (menu "Farář")
+        'Liturgický Rok',           // Titulek stránky
+        'Liturgický Rok',           // Název v menu
+        'manage_options',           // Oprávnění
+        'knihaslova_liturgy_settings', // Slug podstránky
+        'knihaslova_liturgy_settings_page_html' // Funkce pro vykreslení obsahu
+    );
 }
 add_action('admin_menu', 'knihaslova_add_admin_menu');
 
@@ -91,24 +101,77 @@ function knihaslova_hesla_page_html() {
 }
 
 /**
- * Registruje nastavení, sekce a pole pro stránku s hesly.
+ * --- NOVÉ: Vykreslí obsah stránky pro nastavení liturgického roku ---
+ */
+function knihaslova_liturgy_settings_page_html() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields('knihaslova_liturgy_settings');
+            do_settings_sections('knihaslova_liturgy_settings');
+            submit_button('Uložit nastavení');
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+/**
+ * Registruje nastavení, sekce a pole pro stránku s hesly a liturgií.
  */
 function knihaslova_settings_init() {
+    // --- Nastavení pro hesla ---
     register_setting('knihaslova_hesla_settings', 'knihaslova_priest_credentials');
-
     add_settings_section(
         'knihaslova_hesla_section',
         'Správa přístupových údajů',
         'knihaslova_hesla_section_cb',
         'knihaslova_hesla'
     );
-
     add_settings_field(
         'priest_credentials_field',
         'Přihlašovací údaje',
         'knihaslova_priest_credentials_field_cb',
         'knihaslova_hesla',
         'knihaslova_hesla_section'
+    );
+
+    // --- NOVÉ: Nastavení pro liturgický rok ---
+    register_setting('knihaslova_liturgy_settings', 'knihaslova_override_reference_date');
+    register_setting('knihaslova_liturgy_settings', 'knihaslova_override_reference_sunday_id');
+    register_setting('knihaslova_liturgy_settings', 'knihaslova_liturgical_cycle_base_year_A');
+
+    add_settings_section(
+        'knihaslova_liturgy_override_section',
+        'Manuální kalibrace liturgického roku',
+        'knihaslova_liturgy_override_section_cb',
+        'knihaslova_liturgy_settings'
+    );
+    add_settings_field(
+        'override_reference_date_field',
+        'Referenční datum',
+        'knihaslova_override_reference_date_field_cb',
+        'knihaslova_liturgy_settings',
+        'knihaslova_liturgy_override_section'
+    );
+    add_settings_field(
+        'override_reference_sunday_id_field',
+        'Referenční neděle',
+        'knihaslova_override_reference_sunday_id_field_cb',
+        'knihaslova_liturgy_settings',
+        'knihaslova_liturgy_override_section'
+    );
+    add_settings_field(
+        'liturgical_cycle_base_year_A_field',
+        'Základní rok pro cyklus A',
+        'knihaslova_liturgical_cycle_base_year_A_field_cb',
+        'knihaslova_liturgy_settings',
+        'knihaslova_liturgy_override_section'
     );
 }
 add_action('admin_init', 'knihaslova_settings_init');
@@ -117,9 +180,6 @@ function knihaslova_hesla_section_cb($args) {
     echo '<p id="' . esc_attr($args['id']) . '">Zde spravujete přihlašovací údaje (e-mail a heslo), které odemknou neveřejný obsah na webu.</p>';
 }
 
-/**
- * Callback pro vykreslení pole s přihlašovacími údaji.
- */
 function knihaslova_priest_credentials_field_cb() {
     $credentials = get_option('knihaslova_priest_credentials', '');
     ?>
@@ -129,5 +189,51 @@ function knihaslova_priest_credentials_field_cb() {
         <br>
         Příklad: <strong>farni.email@domena.cz,Heslo123;dalsi.email@farnost.cz,DalsiHeslo456</strong>
     </p>
+    <?php
+}
+
+// --- NOVÉ: Callbacky pro sekci a pole liturgického roku ---
+
+function knihaslova_liturgy_override_section_cb($args) {
+    echo '<p id="' . esc_attr($args['id']) . '">Tato nastavení slouží k manuálnímu "ukotvení" data konkrétní neděle, aby se ostatní neděle v roce dopočítaly správně. To je užitečné zejména pro neděle v mezidobí po Seslání Ducha Svatého.</p>';
+    echo '<p><strong>Jak to funguje:</strong> Zadejte datum a vyberte, která neděle z vašeho seznamu na toto datum připadá. Systém pak dopočítá data ostatních neděl v týdenních intervalech od tohoto bodu.</p>';
+}
+
+function knihaslova_override_reference_date_field_cb() {
+    $date = get_option('knihaslova_override_reference_date', '');
+    ?>
+    <input type="date" name="knihaslova_override_reference_date" id="override_reference_date_field" value="<?php echo esc_attr($date); ?>">
+    <p class="description">Zadejte datum, které bude sloužit jako referenční bod.</p>
+    <?php
+}
+
+function knihaslova_override_reference_sunday_id_field_cb() {
+    $selected_id = get_option('knihaslova_override_reference_sunday_id', '');
+    $all_sundays = get_option('knihaslova_liturgical_year_data');
+
+    if (empty($all_sundays)) {
+        echo '<p>Nejdříve prosím načtěte data z Google Sheets na hlavní stránce "Farář".</p>';
+        return;
+    }
+    ?>
+    <select name="knihaslova_override_reference_sunday_id" id="override_reference_sunday_id_field" class="large-text">
+        <option value="">-- Vyberte neděli --</option>
+        <?php foreach ($all_sundays as $sunday): ?>
+            <?php if (!empty($sunday['ID_Nedele']) && !empty($sunday['Nazev_Nedele'])): ?>
+                <option value="<?php echo esc_attr($sunday['ID_Nedele']); ?>" <?php selected($selected_id, $sunday['ID_Nedele']); ?>>
+                    <?php echo esc_html($sunday['Nazev_Nedele'] . " (" . $sunday['Obdobi'] . " - " . $sunday['Cyklus'] . ")"); ?>
+                </option>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">Vyberte neděli, která odpovídá zadanému referenčnímu datu.</p>
+    <?php
+}
+
+function knihaslova_liturgical_cycle_base_year_A_field_cb() {
+    $base_year = get_option('knihaslova_liturgical_cycle_base_year_A', '2023');
+    ?>
+    <input type="number" name="knihaslova_liturgical_cycle_base_year_A" id="liturgical_cycle_base_year_A_field" value="<?php echo esc_attr($base_year); ?>" placeholder="Např. 2023">
+    <p class="description">Zadejte rok, kdy začíná cyklus A (např. 2023, který začal adventem 2022). Slouží pro automatický výpočet, pokud není aktivní manuální kalibrace.</p>
     <?php
 }
