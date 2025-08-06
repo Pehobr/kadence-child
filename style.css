@@ -119,3 +119,22 @@ Updated: 2025-07-16 07:01:17
     top: 3px; /* Posune tlačítko dolů */
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3); /* Vytvoří dojem stisknutí */
 }
+
+/* ==========================================================================
+   Zobrazení sidebaru na stránce Liturgického roku pro desktopy
+   ========================================================================== */
+
+/* Cílíme na obrazovky do 1024px, kde je sidebar standardně skrytý */
+@media (max-width: 1024px) {
+
+    /* Specificky pro stránku s šablonou "Liturgický rok" zobrazíme sidebar */
+    .page-template-page-liturgicky-rok-php #secondary {
+        display: block;
+    }
+
+    /* A zároveň na této stránce obnovíme layout se dvěma sloupci, 
+       aby se obsah a sidebar vešly vedle sebe. */
+    .page-template-page-liturgicky-rok-php.has-sidebar .content-container {
+        grid-template-columns: 1fr var(--kadence-sidebar-width, 30%);
+    }
+}

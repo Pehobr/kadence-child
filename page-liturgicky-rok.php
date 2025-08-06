@@ -225,6 +225,9 @@ get_header(); // Načte hlavičku webu
             ?>
         
         </main>
+
+        <?php get_sidebar(); // SPRÁVNÉ MÍSTO: Hned za hlavním obsahem, ale stále uvnitř kontejneru. ?>
+
     </div>
 </div>
 
