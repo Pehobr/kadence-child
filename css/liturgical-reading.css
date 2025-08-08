@@ -23,19 +23,42 @@
 }
 
 .button.button-reading {
-    background-color: #6c757d; /* A neutral, secondary color */
-    color: #fff;
+    /* Nová barevnost a základní vlastnosti */
+    background-color: #7a6a58; /* Světlejší hnědá z palety webu */
+    color: #f5f2eb;
+    font-weight: 600;
+
+    /* Prostorový (3D) efekt podle vzoru ostatních tlačítek */
+    border: 1px solid #9c8f7e; /* Světlejší horní/levý okraj */
+    border-bottom-color: #514332; /* Tmavší spodní okraj */
+    border-right-color: #514332; /* Tmavší pravý okraj */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 
+                0 4px 0 #514332; /* Stín "pod" tlačítkem */
+    text-shadow: none;
+
+    /* Vlastnosti pro správné chování a vzhled */
+    position: relative;
+    top: 0;
+    transition: all 0.1s ease-in-out;
     text-align: center;
     width: 100%;
     box-sizing: border-box;
-    text-decoration: none; /* Ensure no underline */
-    display: inline-block; /* Proper button behavior */
-    padding: 10px 15px; /* Consistent padding */
-    border-radius: 4px; /* Rounded corners */
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 15px;
 }
 
 .button.button-reading:hover {
-    background-color: #5a6268;
+    background-color: #8b7c69; /* Lehké zesvětlení při najetí myší */
+    color: #ffffff;
+}
+
+/* Efekt při stisknutí tlačítka */
+.button.button-reading:active {
+    top: 3px; /* Tlačítko se posune dolů */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3), 
+                0 1px 0 #514332; /* Stín se zmenší */
 }
 
 /* ==========================================================================
