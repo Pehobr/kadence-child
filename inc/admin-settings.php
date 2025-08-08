@@ -31,7 +31,7 @@ function knihaslova_add_admin_menu() {
         'knihaslova_hesla_page_html' // Funkce pro vykreslení obsahu stránky s hesly
     );
 
-    // --- NOVÉ: Podpoložka pro nastavení liturgického roku ---
+    // Podpoložka pro nastavení liturgického roku
     add_submenu_page(
         'knihaslova_farar',         // Rodičovský slug (menu "Farář")
         'Liturgický Rok',           // Titulek stránky
@@ -39,6 +39,16 @@ function knihaslova_add_admin_menu() {
         'manage_options',           // Oprávnění
         'knihaslova_liturgy_settings', // Slug podstránky
         'knihaslova_liturgy_settings_page_html' // Funkce pro vykreslení obsahu
+    );
+
+    // --- NOVÉ: Podpoložka pro nastavení zobrazení ---
+    add_submenu_page(
+        'knihaslova_farar',
+        'Nastavení zobrazení',
+        'Zobrazení',
+        'manage_options',
+        'knihaslova_display_settings',
+        'knihaslova_display_settings_page_html'
     );
 }
 add_action('admin_menu', 'knihaslova_add_admin_menu');
@@ -101,7 +111,7 @@ function knihaslova_hesla_page_html() {
 }
 
 /**
- * --- NOVÉ: Vykreslí obsah stránky pro nastavení liturgického roku ---
+ * Vykreslí obsah stránky pro nastavení liturgického roku.
  */
 function knihaslova_liturgy_settings_page_html() {
     if (!current_user_can('manage_options')) {
@@ -122,7 +132,28 @@ function knihaslova_liturgy_settings_page_html() {
 }
 
 /**
- * Registruje nastavení, sekce a pole pro stránku s hesly a liturgií.
+ * --- NOVÉ: Vykreslí obsah stránky pro nastavení zobrazení ---
+ */
+function knihaslova_display_settings_page_html() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields('knihaslova_display_settings');
+            do_settings_sections('knihaslova_display_settings');
+            submit_button('Uložit nastavení zobrazení');
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+/**
+ * Registruje nastavení, sekce a pole pro stránku s hesly, liturgií a zobrazením.
  */
 function knihaslova_settings_init() {
     // --- Nastavení pro hesla ---
@@ -141,7 +172,7 @@ function knihaslova_settings_init() {
         'knihaslova_hesla_section'
     );
 
-    // --- NOVÉ: Nastavení pro liturgický rok ---
+    // --- Nastavení pro liturgický rok ---
     register_setting('knihaslova_liturgy_settings', 'knihaslova_override_reference_date');
     register_setting('knihaslova_liturgy_settings', 'knihaslova_override_reference_sunday_id');
     register_setting('knihaslova_liturgy_settings', 'knihaslova_liturgical_cycle_base_year_A');
@@ -166,12 +197,28 @@ function knihaslova_settings_init() {
         'knihaslova_liturgy_settings',
         'knihaslova_liturgy_override_section'
     );
-    add_settings_field(
+     add_settings_field(
         'liturgical_cycle_base_year_A_field',
         'Základní rok pro cyklus A',
         'knihaslova_liturgical_cycle_base_year_A_field_cb',
         'knihaslova_liturgy_settings',
         'knihaslova_liturgy_override_section'
+    );
+
+    // --- NOVÉ: Nastavení pro zobrazení ---
+    register_setting('knihaslova_display_settings', 'knihaslova_hide_mobile_menu_icon');
+    add_settings_section(
+        'knihaslova_mobile_display_section',
+        'Mobilní zobrazení',
+        'knihaslova_mobile_display_section_cb',
+        'knihaslova_display_settings'
+    );
+    add_settings_field(
+        'hide_mobile_menu_icon_field',
+        'Skrýt ikonu menu v hlavičce',
+        'knihaslova_hide_mobile_menu_icon_field_cb',
+        'knihaslova_display_settings',
+        'knihaslova_mobile_display_section'
     );
 }
 add_action('admin_init', 'knihaslova_settings_init');
@@ -191,8 +238,6 @@ function knihaslova_priest_credentials_field_cb() {
     </p>
     <?php
 }
-
-// --- NOVÉ: Callbacky pro sekci a pole liturgického roku ---
 
 function knihaslova_liturgy_override_section_cb($args) {
     echo '<p id="' . esc_attr($args['id']) . '">Tato nastavení slouží k manuálnímu "ukotvení" data konkrétní neděle, aby se ostatní neděle v roce dopočítaly správně. To je užitečné zejména pro neděle v mezidobí po Seslání Ducha Svatého.</p>';
@@ -235,5 +280,22 @@ function knihaslova_liturgical_cycle_base_year_A_field_cb() {
     ?>
     <input type="number" name="knihaslova_liturgical_cycle_base_year_A" id="liturgical_cycle_base_year_A_field" value="<?php echo esc_attr($base_year); ?>" placeholder="Např. 2023">
     <p class="description">Zadejte rok, kdy začíná cyklus A (např. 2023, který začal adventem 2022). Slouží pro automatický výpočet, pokud není aktivní manuální kalibrace.</p>
+    <?php
+}
+
+// --- NOVÉ: Callbacky pro sekci a pole nastavení zobrazení ---
+
+function knihaslova_mobile_display_section_cb($args) {
+    echo '<p id="' . esc_attr($args['id']) . '">Nastavení viditelnosti jednotlivých prvků na mobilních zařízeních.</p>';
+}
+
+function knihaslova_hide_mobile_menu_icon_field_cb() {
+    $option = get_option('knihaslova_hide_mobile_menu_icon');
+    ?>
+    <input type="checkbox" name="knihaslova_hide_mobile_menu_icon" id="hide_mobile_menu_icon_field" value="1" <?php checked($option, 1); ?>>
+    <label for="hide_mobile_menu_icon_field">Ano, skrýt ikonu mobilního menu.</label>
+    <p class="description">
+        Zaškrtněte, pokud chcete v hlavičce na mobilních zařízeních skrýt ikonu pro otevření postranního menu (hamburger).
+    </p>
     <?php
 }
