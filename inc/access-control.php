@@ -147,3 +147,25 @@ function knihaslova_display_success_message() {
     </div>
     <?php
 }
+
+if ( ! function_exists( 'is_user_priest' ) ) {
+    /**
+     * Kontroluje, zda je aktuální uživatel přihlášen a má roli "kněz".
+     *
+     * @return bool True, pokud je uživatel kněz, jinak false.
+     */
+    function is_user_priest() {
+        // Získáme aktuálně přihlášeného uživatele
+        $user = wp_get_current_user();
+
+        // Zkontrolujeme, zda uživatel existuje a zda má v seznamu svých rolí roli 'knez'
+        // 'knez' je zde myšleno jako interní název (slug) role. Ujistěte se, že odpovídá tomu,
+        // jak je role vytvořena v administraci WordPressu.
+        if ( $user && in_array( 'knez', (array) $user->roles ) ) {
+            return true;
+        }
+
+        // Pokud podmínky nejsou splněny, vrátíme false
+        return false;
+    }
+}

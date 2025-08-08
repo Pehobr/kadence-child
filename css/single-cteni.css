@@ -1,0 +1,113 @@
+/*
+ * CSS pro detailní stránku Nedělního čtení
+ */
+
+/* --- Základní rozvržení a nadpisy --- */
+.page-template-template-cteni-php .reading-header h1 {
+    font-size: 2.8em;
+    font-weight: bold;
+    margin-bottom: 0.2em;
+    line-height: 1.2;
+}
+
+.page-template-template-cteni-php .reading-detail-container {
+    padding-top: 1rem;
+}
+
+.page-template-template-cteni-php .reading-header .citation {
+    font-size: 1.4em;
+    font-style: italic;
+    color: #b7a99a;
+    margin-bottom: 2rem;
+    display: block;
+}
+
+/* --- Kontejner záložek --- */
+.tabs-container {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+/* --- Navigace v záložkách --- */
+.tabs-nav {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid #514332;
+}
+
+.tabs-nav li {
+    margin-right: 5px;
+}
+
+.tabs-nav li a {
+    display: block;
+    padding: 12px 25px;
+    text-decoration: none;
+    color: #b7a99a;
+    background-color: #514332;
+    border: 2px solid #514332;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.tabs-nav li a:hover {
+    background-color: #6a5a48;
+}
+
+.tabs-nav li.active a {
+    background-color: #3e2f1c; /* Barva pozadí stránky */
+    color: #f5f2eb;
+    border-color: #514332;
+    position: relative;
+    bottom: -2px; /* Vytvoří efekt propojení s obsahem */
+}
+
+/* --- Obsah záložek --- */
+.tab-content-wrapper {
+    background-color: transparent;
+    border: 2px solid #514332;
+    border-top: none;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --- Styly pro konkrétní obsah v záložkách --- */
+.reading-text-content {
+    font-size: 1.2em;
+    line-height: 1.8;
+}
+
+/* --- Breadcrumbs (drobečková navigace) --- */
+.breadcrumbs {
+    margin-bottom: 1rem;
+    color: #b7a99a;
+    font-size: 0.9em;
+}
+
+.breadcrumbs a {
+    color: #b7a99a;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}

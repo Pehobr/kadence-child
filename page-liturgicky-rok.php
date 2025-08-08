@@ -5,6 +5,9 @@
  */
 
 get_header(); // Načte hlavičku webu
+
+// Zjistíme roli uživatele hned na začátku pro efektivitu
+$is_priest = is_user_priest();
 ?>
 
 <div id="primary" class="content-area">
@@ -12,7 +15,7 @@ get_header(); // Načte hlavičku webu
         <main id="main" class="site-main" role="main">
 
             <?php
-            // --- POMOCNÉ FUNKCE (UPRAVENO) ---
+            // --- POMOCNÉ FUNKCE (Z PŮVODNÍHO KÓDU) ---
 
             if (!function_exists('knihaslova_get_liturgical_cycle')) {
                 /**
@@ -215,6 +218,41 @@ get_header(); // Načte hlavičku webu
                             <?php else: ?>
                                 <button class="button" disabled>Příběh se připravuje</button>
                             <?php endif; ?>
+
+                            <?php
+                            // --- START: Liturgical Readings for Priests ---
+                            $sunday_id = isset($sunday['ID_Nedele']) ? trim($sunday['ID_Nedele']) : '';
+                            // Použijeme klíče podle názvů sloupců zadaných v původním požadavku
+                            $first_reading_citation = isset($sunday['1_cteni_citace']) ? trim($sunday['1_cteni_citace']) : '';
+                            $second_reading_citation = isset($sunday['2_cteni_citace']) ? trim($sunday['2_cteni_citace']) : '';
+
+if ($sunday_id && (!empty($first_reading_citation) || !empty($second_reading_citation))) {                                // Přidáme oddělovač, pokud již existují tlačítka příběhů
+                                if (!empty($stories_for_sunday)) {
+                                    echo '<hr class="buttons-separator-katalog">';
+                                }
+                                
+                                echo '<div class="reading-buttons-katalog">';
+                                
+                                if (!empty($first_reading_citation)) {
+                                    printf(
+                                        '<a href="%s" class="button button-reading">%s</a>',
+                                        esc_url(home_url('/cteni/' . $sunday_id . '/1/')),
+                                        esc_html($first_reading_citation)
+                                    );
+                                }
+                                
+                                if (!empty($second_reading_citation)) {
+                                    printf(
+                                        '<a href="%s" class="button button-reading">%s</a>',
+                                        esc_url(home_url('/cteni/' . $sunday_id . '/2/')),
+                                        esc_html($second_reading_citation)
+                                    );
+                                }
+
+                                echo '</div>';
+                            }
+                            // --- END: Liturgical Readings for Priests ---
+                            ?>
                         </div>
                     </div>
                     <?php
@@ -226,7 +264,7 @@ get_header(); // Načte hlavičku webu
         
         </main>
 
-        <?php get_sidebar(); // SPRÁVNÉ MÍSTO: Hned za hlavním obsahem, ale stále uvnitř kontejneru. ?>
+        <?php get_sidebar(); // Načtení sidebaru ?>
 
     </div>
 </div>

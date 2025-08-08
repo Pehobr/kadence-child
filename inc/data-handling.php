@@ -81,12 +81,12 @@ function knihaslova_manual_data_update() {
         'katolicky'      => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=581207951&single=true&output=csv',
         'ekumenicky'     => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1989356485&single=true&output=csv',
         'jeruzalemsky'   => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=493482207&single=true&output=csv',
-        'liturgicky_rok' => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1699666248&single=true&output=csv' // <-- PONECH ZDE SVOJI URL
+        'liturgicky_rok' => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSjUiTc1VHd8teOLlQF51n5PLw1Z7MffXrovWmjfuypO5qR0ZV-vOE1oEZ2fFn95RvjpToiwFepiMm0/pub?gid=1699666248&single=true&output=csv'
     ];
 
     // 2. NAČTENÍ DAT PRO LITURGICKÝ ROK
     // ===================================
-    if (empty($urls['liturgicky_rok']) || strpos($urls['liturgicky_rok'], 'TVOJE_') === 0) {
+    if (empty($urls['liturgicky_rok'])) {
         echo '<div class="notice notice-warning"><p><strong>Liturgický rok:</strong> Není zadána platná CSV adresa. Tento krok byl přeskočen.</p></div>';
     } else {
         $liturgicky_rok_data = get_data_from_google_sheet($urls['liturgicky_rok']);
@@ -136,19 +136,15 @@ function knihaslova_manual_data_update() {
         ];
     }
 
-    // Získáme stará data pro porovnání
     $old_stories_data = get_option('knihaslova_all_stories_data');
 
-    // Porovnáme stará a nová data. Pokud jsou stejná, nic neukládáme.
     if ($old_stories_data == $all_stories_data) {
         echo '<div class="notice notice-info"><p><strong>Příběhy a překlady:</strong> Data jsou aktuální, nebylo potřeba nic ukládat. Počet příběhů: ' . count($all_stories_data) . '</p></div>';
     } else {
-        // Pokud jsou data jiná, uložíme je.
         update_option('knihaslova_all_stories_data', $all_stories_data);
         echo '<div class="notice notice-success"><p><strong>Příběhy a překlady:</strong> Nová data byla úspěšně zpracována a uložena. Počet příběhů: ' . count($all_stories_data) . '</p></div>';
     }
     
-    // Vrátíme TRUE, aby skript v administraci věděl, že vše proběhlo v pořádku.
     return true; 
 }
 
@@ -165,3 +161,29 @@ function knihaslova_get_citation_sort_key($citation) {
     }
     return 999999;
 }
+
+// --- START: New function for Liturgical Readings ---
+/**
+ * Retrieves data for a specific Sunday from the saved 'knihaslova_liturgical_year_data' option.
+ *
+ * @param string $id The unique ID of the Sunday (from column 'ID_Nedele').
+ * @return array|null The row data for the Sunday as an associative array, or null if not found.
+ */
+function knihaslova_get_sunday_data_by_id( $id ) {
+    $all_sundays = get_option( 'knihaslova_liturgical_year_data' );
+
+    if ( ! $all_sundays || ! is_array( $all_sundays ) ) {
+        return null;
+    }
+
+    foreach ( $all_sundays as $sunday_row ) {
+        // Check if the key 'ID_Nedele' exists and if its value matches the requested ID.
+        if ( isset( $sunday_row['ID_Nedele'] ) && trim( $sunday_row['ID_Nedele'] ) === $id ) {
+            return $sunday_row; // Return the associative array for the matching Sunday.
+        }
+    }
+
+    return null; // Return null if no match was found.
+}
+// --- END: New function for Liturgical Readings ---
+

@@ -35,6 +35,10 @@ require_once $inc_dir . 'custom-functions.php';
 // 7. Kontrola přístupu chráněného heslem
 require_once $inc_dir . 'access-control.php';
 
+// 8. Controller pro novou funkcionalitu liturgických čtení
+require_once $inc_dir . 'liturgical-readings-controller.php';
+
+
 /**
  * Načte speciální CSS soubor pouze pro přihlašovací stránku.
  */
@@ -74,3 +78,16 @@ function knihaslova_zmenit_razeni_stranek_v_adminu( $query ) {
 }
 // Připojíme naši funkci k háku 'pre_get_posts'
 add_action( 'pre_get_posts', 'knihaslova_zmenit_razeni_stranek_v_adminu' );
+
+/**
+ * Obnoví "rewrite rules" po aktivaci šablony.
+ * Je to klíčové pro zprovoznění vlastních URL adres (např. pro liturgická čtení).
+ */
+function knihaslova_rewrite_flush() {
+    // Zavolá funkci, která definuje naše vlastní URL pravidla
+    pehobr_add_readings_rewrite_rules();
+    // Aplikuje změny v databázi WordPressu
+    flush_rewrite_rules();
+}
+// Připojíme naši funkci k háku 'after_switch_theme', který se spustí při aktivaci šablony
+add_action( 'after_switch_theme', 'knihaslova_rewrite_flush' );
