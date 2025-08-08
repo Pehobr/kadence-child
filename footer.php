@@ -38,13 +38,13 @@ do_action( 'kadence_after_content' );
 <?php // ?>
 <div class="mobile-bottom-bar">
     <?php // Ikona 1: Odkaz na profil (pokud bude existovat) ?>
-    <a href="<?php echo esc_url( site_url( '/navod/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-question" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( site_url( '/informace/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
 
     <?php // Ikona 2: Odkaz na Vyhledávání citací ?>
     <a href="<?php echo esc_url( site_url( '/vyhledavani-citaci/' ) ); ?>" class="mobile-nav-icon"><i class="fa fa-search" aria-hidden="true"></i></a>
 
     <?php // Ikona 3: Odkaz na domovskou stránku ?>
-    <a href="<?php echo esc_url( site_url( '/liturgicky-rok/' ) ); ?>" class="mobile-nav-icon mobile-nav-icon-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+    <a href="<?php echo esc_url( site_url( '/liturgicky-rok/' ) ); ?>" class="mobile-nav-icon mobile-nav-icon-home"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></a>
 
     <?php // Ikona 4: Odkaz na archiv příběhů (katalog) ?>
     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'katalog' ) ) ); ?>" class="mobile-nav-icon"><i class="fa fa-list" aria-hidden="true"></i></a>
