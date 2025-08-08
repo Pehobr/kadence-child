@@ -62,13 +62,12 @@
 /* We can reuse the .button-reading style defined above */
 
 
-/* ==========================================================================
-   Reading Detail Page (template-cteni.php)
-   ========================================================================== */
+/* Reading Detail Page (template-cteni.php)
+========================================================================== */
 .reading-detail-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1rem;
+    max-width: 100%; /* Změněno z 800px na 100% */
+    margin: 2rem 0;  /* Odstraněno automatické centrování */
+    padding: 1rem 2rem; /* Můžete upravit boční padding podle potřeby */
 }
 
 .reading-header {
@@ -107,52 +106,4 @@
     font-size: 1.1em;
     line-height: 1.8;
     padding: 1rem;
-}
-
-/* Sub-tabs for Interpretation and More sections */
-.sub-tabs-container {
-    margin-top: 1rem;
-}
-
-.sub-tabs-nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    border-bottom: 1px solid #ddd;
-}
-
-.sub-tabs-nav li a {
-    display: block;
-    padding: 10px 20px;
-    text-decoration: none;
-    color: #333;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-bottom: 0;
-    margin-right: 5px;
-    border-radius: 5px 5px 0 0;
-    position: relative;
-    bottom: -1px;
-}
-
-.sub-tabs-nav li.active a {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
-    font-weight: bold;
-}
-
-.sub-tab-content-wrapper {
-    border: 1px solid #ddd;
-    border-top: 0;
-    padding: 20px;
-    background-color: #fff;
-}
-
-.sub-tab-content {
-    display: none;
-}
-
-.sub-tab-content.active {
-    display: block;
 }

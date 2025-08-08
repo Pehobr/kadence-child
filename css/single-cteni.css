@@ -111,3 +111,79 @@
 .breadcrumbs a:hover {
     text-decoration: underline;
 }
+
+/* =================================================================== */
+/* Styly pro podzáložky (Exegeze, Duchovní výklad atd.)              */
+/* =================================================================== */
+
+.sub-tabs-container {
+    margin-top: 1.5rem; /* Vytvoří mezeru od obsahu nad */
+}
+
+/* Navigace v podzáložkách - podobná hlavním, ale menší a decentnější */
+.sub-tabs-nav {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid #7a6a58; /* Světlejší hnědá linka pro odlišení */
+}
+
+.sub-tabs-nav li a {
+    display: block;
+    padding: 10px 20px; /* Menší odsazení než u hlavních záložek */
+    text-decoration: none;
+    color: #b7a99a;
+    background-color: #514332;
+    border: 2px solid #7a6a58;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0; /* Menší zaoblení */
+    font-weight: normal;
+    font-size: 1em; /* Menší písmo */
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+
+.sub-tabs-nav li a:hover {
+    background-color: #6a5a48;
+    color: #f5f2eb;
+}
+
+/* Aktivní stav podzáložky */
+.sub-tabs-nav li.active a {
+    background-color: #3e2f1c; /* Pozadí v barvě stránky */
+    color: #f5f2eb;
+    border-color: #7a6a58;
+    font-weight: bold;
+    position: relative;
+    bottom: -2px;
+}
+
+/* Kontejner pro obsah podzáložek */
+.sub-tab-content-wrapper {
+    background-color: transparent; /* Průhledné pozadí, aby vynikl text na pozadí stránky */
+    border: 2px solid #7a6a58; /* Stejná barva ohraničení jako linka pod záložkami */
+    border-top: none;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Zajištění, že text uvnitř bude světlý a čitelný */
+.sub-tab-content-wrapper,
+.sub-tab-content-wrapper p,
+.sub-tab-content-wrapper div {
+    color: #f5f2eb;
+}
+
+/* Animace pro zobrazení obsahu (zůstává) */
+.sub-tab-content {
+    display: none;
+}
+.sub-tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

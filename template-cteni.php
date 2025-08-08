@@ -20,6 +20,9 @@ if ( ! $reading_data ) {
     exit();
 }
 
+// Získáme data o komentáři, abychom je mohli použít pro více záložek
+$commentary_post = $reading_data ? knihaslova_get_reading_commentary( $reading_data['sunday_id'], $reading_data['reading_type'] ) : null;
+
 get_header();
 ?>
 
@@ -38,13 +41,14 @@ get_header();
                 <ul class="tabs-nav">
                     <li class="active"><a href="#text">Text</a></li>
                     <li><a href="#vyklad">Výklad</a></li>
-                    <li><a href="#dalsi">Další</a></li>
+                    <li><a href="#podcast">Podcast</a></li>
+                    <li><a href="#infografika">Infografika</a></li>
+                    <li><a href="#materialy">Materiály</a></li>
                 </ul>
 
                 <div class="tab-content-wrapper">
                     <div id="text" class="tab-content active">
                         <?php
-                        // Pass data to the template part
                         set_query_var( 'reading_text_content', $reading_data['text'] );
                         get_template_part( 'template-parts/content', 'reading-text' );
                         ?>
@@ -52,8 +56,53 @@ get_header();
                     <div id="vyklad" class="tab-content">
                         <?php get_template_part( 'template-parts/content', 'reading-interpretation' ); ?>
                     </div>
-                    <div id="dalsi" class="tab-content">
-                        <?php get_template_part( 'template-parts/content', 'reading-more' ); ?>
+                    <div id="podcast" class="tab-content">
+                        <?php
+                        if ( $commentary_post && function_exists('get_field') ) {
+                            $podcast_content = get_field('podcast', $commentary_post->ID);
+                            if ( !empty($podcast_content) ) {
+                                $trimmed_content = trim($podcast_content);
+                                if ( filter_var($trimmed_content, FILTER_VALIDATE_URL) ) {
+                                    echo wp_audio_shortcode( array('src' => esc_url($trimmed_content)) );
+                                } else {
+                                    echo $podcast_content;
+                                }
+                            } else {
+                                echo '<p>Obsah pro podcast bude doplněn později.</p>';
+                            }
+                        } else {
+                            echo '<p>Obsah pro podcast bude doplněn později.</p>';
+                        }
+                        ?>
+                    </div>
+                    <div id="infografika" class="tab-content">
+                        <?php
+                        if ( $commentary_post && function_exists('get_field') ) {
+                            $infographic_html = get_field('infografika', $commentary_post->ID);
+                            if ( !empty($infographic_html) ) {
+                                // Přímo vypíšeme HTML obsah z pole, protože očekáváme iframe
+                                echo $infographic_html;
+                            } else {
+                                echo '<p>Obsah pro infografiku bude doplněn později.</p>';
+                            }
+                        } else {
+                            echo '<p>Obsah pro infografiku bude doplněn později.</p>';
+                        }
+                        ?>
+                    </div>
+                    <div id="materialy" class="tab-content">
+                         <?php
+                        if ( $commentary_post && function_exists('get_field') ) {
+                            $materials = get_field('materialy', $commentary_post->ID);
+                            if ( !empty($materials) ) {
+                                echo apply_filters('the_content', $materials);
+                            } else {
+                                echo '<p>Obsah pro materiály bude doplněn později.</p>';
+                            }
+                        } else {
+                            echo '<p>Obsah pro materiály bude doplněn později.</p>';
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
