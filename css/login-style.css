@@ -172,3 +172,19 @@
     font-size: 16px;
     box-sizing: border-box;
 }
+
+/* === NOVÉ: Styly pro odkaz na žádost o heslo === */
+.password-request-link {
+    margin-top: 1.5em;
+}
+
+.password-request-link a {
+    color: #b7a99a;
+    text-decoration: underline;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.password-request-link a:hover {
+    color: #f5f2eb;
+}
