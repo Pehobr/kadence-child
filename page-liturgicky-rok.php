@@ -113,7 +113,7 @@ $is_access_granted = function_exists('knihaslova_is_access_granted') && knihaslo
                 if ($found_sunday_id) {
                     foreach ($sundays_for_display as $index => $sunday) {
                         if ($sunday['ID_Nedele'] === $found_sunday_id) {
-                            $current_index = ($index > 0) ? $index - 1 : 0;
+                            $current_index = $index;
                             break;
                         }
                     }
