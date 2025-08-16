@@ -93,6 +93,7 @@
 .reading-text-content {
     font-size: 1.2em;
     line-height: 1.8;
+    color: #f5f2eb; /* TENTO ŘÁDEK PŘIDEJTE */
 }
 
 /* --- Breadcrumbs (drobečková navigace) --- */
