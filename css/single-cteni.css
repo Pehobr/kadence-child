@@ -187,3 +187,17 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* --- Styly pro obsah záložky Infografika --- */
+.tab-content-wrapper #infografika {
+    background-color: #f5f2eb; /* Vaše světlá krémová barva */
+    padding: 25px; /* Odsazení obsahu od okrajů */
+    border-radius: 8px; /* Lehce zaoblené rohy */
+    color: #3e2f1c; /* Zajistí tmavý text pro případný obsah mimo iframe */
+}
+
+/* Zajistí, že se iframe roztáhne na celou šířku kontejneru */
+.tab-content-wrapper #infografika iframe {
+    width: 100%;
+    border: none;
+}
