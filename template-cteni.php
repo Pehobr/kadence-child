@@ -42,7 +42,6 @@ get_header();
                     <li class="active"><a href="#text">Text</a></li>
                     <li><a href="#vyklad">Výklad</a></li>
                     <li><a href="#podcast">Podcast</a></li>
-                    <li><a href="#infografika">Infografika</a></li>
                     <li><a href="#materialy">Materiály</a></li>
                 </ul>
 
@@ -72,21 +71,6 @@ get_header();
                             }
                         } else {
                             echo '<p>Obsah pro podcast bude doplněn později.</p>';
-                        }
-                        ?>
-                    </div>
-                    <div id="infografika" class="tab-content">
-                        <?php
-                        if ( $commentary_post && function_exists('get_field') ) {
-                            $infographic_html = get_field('infografika', $commentary_post->ID);
-                            if ( !empty($infographic_html) ) {
-                                // Přímo vypíšeme HTML obsah z pole, protože očekáváme iframe
-                                echo $infographic_html;
-                            } else {
-                                echo '<p>Obsah pro infografiku bude doplněn později.</p>';
-                            }
-                        } else {
-                            echo '<p>Obsah pro infografiku bude doplněn později.</p>';
                         }
                         ?>
                     </div>
